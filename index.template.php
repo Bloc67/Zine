@@ -34,7 +34,9 @@ function template_html_above()
 <!DOCTYPE html>
 <html', $context['right_to_left'] ? ' dir="rtl"' : '', '>
 <head>
-	<link rel="stylesheet" type="text/css" href="', $settings['theme_url'], '/css/index', $context['theme_variant'], '.css?v102" />';
+	<link rel="stylesheet" type="text/css" href="', $settings['theme_url'], '/css/index', $context['theme_variant'], '.css?v102" />
+	<link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;900&family=Roboto:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">	
+	';
 
 	// RTL languages require an additional stylesheet.
 	if ($context['right_to_left'])
@@ -43,6 +45,8 @@ function template_html_above()
 
 	// Here comes the JavaScript bits!
 	echo '
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
 	<script type="text/javascript" src="', $settings['default_theme_url'], '/scripts/script.js?fin20"></script>
 	<script type="text/javascript" src="', $settings['theme_url'], '/scripts/theme.js?fin20"></script>
 	<script type="text/javascript"><!-- // --><![CDATA[
@@ -104,10 +108,6 @@ function template_html_above()
 	// Output any remaining HTML headers. (from mods, maybe?)
 	echo $context['html_headers'];
 
-	if(!empty($settings['mycss']))
-		echo '
-	<style>' , $settings['mycss'] , '</style>';
-	
 	echo '
 </head>
 <body' , function_exists('template_body_id') ? template_body_id() : ''   , '>';
@@ -118,27 +118,19 @@ function template_body_above()
 	global $context, $settings, $options, $scripturl, $txt, $modSettings;
 
 	echo '
-<section id="headersection">
-	<header id="topheader">
-		<h1 class="forumtitle">
-			<a href="', $scripturl, '">' , $context['forum_name'] , '</a>
-		</h1>
-		<div class="forumdetails">
-			<div class="forumuser">' , template_head_user() , '</div>
-			<nav id="mobilnav">
-				<input type="checkbox" id="mobilmeny" />
-				<label id="mobilmeny_label" for="mobilmeny" onclick><span class="icon-menu"></span></label>
-				' , template_menu(true) , '
-			</nav>
-		</div>
+<section id="header_section">
+	<header id="top_header">
+		<h1 id="main_title"><a href="', $scripturl, '">' , $context['forum_name'] , '</a></h1>
+		<div id="main_menu">' , template_menu() , '</div>
+		<div class="user_menu">' , template_head_user() , '</div>
 	</header>
-	<menu>' , template_menu() , '</menu>
 </section>
-<div id="h_linktree">' , theme_linktree() , '</div>
-<div id="h_news">' , template_head_news() , '</div>
+<section id="linktree_section">' , theme_linktree() , '</section>
+<section id="news_section">' , template_head_news() , '</section>
 
-<section id="contentsection">
-	<main id="maincontent">';
+<section id="content_section">
+	' , function_exists('template_section_menu') ? template_section_menu() : '' , '
+	<main id="content_main">';
 	
 	// convert any pages
 	convertPageindex();
@@ -151,8 +143,9 @@ function template_body_below()
 	echo '
 	</main>
 </section>
-<section id="footersection">
-	<footer id="subfooter">
+
+<section id="footer_section">
+	<footer id="bottom_footer">
 		', theme_copyright();
 
 	// Show the load time?
@@ -163,8 +156,7 @@ function template_body_below()
 	echo '
 		<small><a href="https://github.com/blocthemes/Rebus89" target="_blank">Rebus89 | Bloc | v1.0</small>
 	</footer>
-</section>
-';
+</section>';
 }
 
 function template_html_below()
@@ -181,23 +173,23 @@ function template_head_user()
 	if ($context['user']['is_logged'])
 	{
 		echo '
-			<div class="user">';
+				<ul class="reset mob horiz_menu circular">';
+		
 		if (!empty($context['user']['avatar']))
 			echo '
-				<a href="' , $scripturl , '?action=profile" class="mavatar" style="background-image: url(', $context['user']['avatar']['href'], '"></a>';
+					<li><a href="' , $scripturl , '?action=profile" class="mavatar" style="background-image: url(', $context['user']['avatar']['href'], '"></a></li>';
 		else
 			echo '
-				<a href="' , $scripturl , '?action=profile"  class="mavatar">' , substr($context['user']['name'],0,1) , '</a>';
-			
+					<li class="red"><a href="' , $scripturl , '?action=profile"  class="mavatar">' , substr($context['user']['name'],0,1) , '</a></li>';
+
 		echo '
-				<ul class="reset mob">
-					<li class="unr"><a href="', $scripturl, '?action=unread">', $txt['a_unread'], '</a></li>
-					<li class="rep"><a href="', $scripturl, '?action=unreadreplies">', $txt['a_replies'], '</a></li>';
+					<li class="unr"><a href="', $scripturl, '?action=unread" title="' , $txt['a_unread'] , '">', substr($txt['a_unread'],0,1), '</a></li>
+					<li class="rep"><a href="', $scripturl, '?action=unreadreplies" title="' ,$txt['a_replies'] , '">', substr($txt['a_replies'],0,1), '</a></li>';
 
 		// Is the forum in maintenance mode?
 		if ($context['in_maintenance'] && $context['user']['is_admin'])
 			echo '
-					<li class="notice">', $txt['maintain_mode_on'], '</li>';
+					<li class="notice" title="', $txt['a_maintain'], '">' , substr($txt['maintain_mode_on'],0,1) , '</li>';
 
 		// Are there any members waiting for approval?
 		if (!empty($context['unapproved_members']))
@@ -209,9 +201,7 @@ function template_head_user()
 					<li class="openm"><a href="', $scripturl, '?action=moderate;area=reports">', sprintf($txt['mod_reports_waiting'], $context['open_mod_reports']), '</a></li>';
 
 		echo '
-					<li class="dat">', $context['current_time'], '</li>
-				</ul>
-			</div>';
+				</ul>';
 	}
 	// Otherwise they're a guest - this time ask them to either register or login - lazy bums...
 	elseif (!empty($context['show_login_bar']))
@@ -321,122 +311,84 @@ function theme_linktree($force_show = false)
 }
 
 // Show the menu up top. Something like [home] [help] [profile] [logout]...
-function template_menu($mobil = false)
+function template_menu()
 {
 	global $context, $settings, $options, $scripturl, $txt;
 
-	if($mobil)
-	{
-		echo '
-				<ul class="reset mobilmenu" id="menu_nav_mobile">';
+	echo '
+	<nav class="navigation horiz_menu">
+		<input class="toggle" type="checkbox" id="more" aria-hidden="true" tabindex="-1"/>
+		<div class="navigation__inner">';
 
-		foreach ($context['menu_buttons'] as $act => $button)
+	$first = true;
+	foreach ($context['menu_buttons'] as $act => $button)
+	{
+		if($first)
 		{
 			echo '
-					<li id="button_', $act, '">
-						<a class="', $button['active_button'] ? 'active ' : '', 'firstlevel" href="', $button['href'], '"', isset($button['target']) ? ' target="' . $button['target'] . '"' : '', '>
-							<span class="', !empty($button['sub_buttons']) ? 'parent ' : '' , isset($button['is_last']) ? 'last ' : '', 'firstlevel">', $button['title'], '</span>
-						</a>';
+			<div class="navigation__logo">
+				<a class="', $button['active_button'] ? 'active ' : '', 'navigation__link" href="', $button['href'], '"', isset($button['target']) ? ' target="' . $button['target'] . '"' : '', '>
+					<span class="', !empty($button['sub_buttons']) ? 'parent ' : '' , isset($button['is_last']) ? 'last ' : '', 'firstlevel">', $button['title'], '</span>
+				</a>
+			</div>
+			<ul class="navigation__list">';
+			$first = false;
+		}
+		else
+		{
+			echo '
+				<li id="button_', $act, '" class="navigation__item' , !empty($button['sub_buttons']) ? ' subs' : '' , '">
+					<a class="', $button['active_button'] ? 'active ' : '', 'navigation__link" href="', $button['href'], '"', isset($button['target']) ? ' target="' . $button['target'] . '"' : '', '>
+						<span class="', !empty($button['sub_buttons']) ? 'parent ' : '' , isset($button['is_last']) ? 'last ' : '', 'firstlevel">', $button['title'], '</span>
+					</a>';
 			if (!empty($button['sub_buttons']))
 			{
 				echo '
-						<ul class="reset">';
+					<ul>';
 
 				foreach ($button['sub_buttons'] as $childbutton)
 				{
 					echo '
-							<li>
-								<a href="', $childbutton['href'], '"', isset($childbutton['target']) ? ' target="' . $childbutton['target'] . '"' : '', '>
-									<span', isset($childbutton['is_last']) ? ' class="last"' : '', '>', $childbutton['title'], !empty($childbutton['sub_buttons']) ? '...' : '', '</span>
-								</a>';
+						<li>
+							<a href="', $childbutton['href'], '"', isset($childbutton['target']) ? ' target="' . $childbutton['target'] . '"' : '', '>
+								<span', isset($childbutton['is_last']) ? ' class="last"' : '', '>', $childbutton['title'], !empty($childbutton['sub_buttons']) ? '...' : '', '</span>
+							</a>';
 					// 3rd level menus :)
 					if (!empty($childbutton['sub_buttons']))
 					{
 						echo '
-								<ul class="reset">';
+							<ul>';
 
 						foreach ($childbutton['sub_buttons'] as $grandchildbutton)
 							echo '
-									<li>
-										<a href="', $grandchildbutton['href'], '"', isset($grandchildbutton['target']) ? ' target="' . $grandchildbutton['target'] . '"' : '', '>
-											<span', isset($grandchildbutton['is_last']) ? ' class="last"' : '', '>', $grandchildbutton['title'], '</span>
-										</a>
-									</li>';
+								<li>
+									<a href="', $grandchildbutton['href'], '"', isset($grandchildbutton['target']) ? ' target="' . $grandchildbutton['target'] . '"' : '', '>
+										<span', isset($grandchildbutton['is_last']) ? ' class="last"' : '', '>', $grandchildbutton['title'], '</span>
+									</a>
+								</li>';
 
 						echo '
-								</ul>';
+							</ul>';
 					}
 
 					echo '
-							</li>';
+						</li>';
 				}
 					echo '
-						</ul>';
+					</ul>';
 			}
 			echo '
-					</li>';
+				</li>';
 		}
-
-		echo '
-				</ul>';
 	}
-	else
-	{
-		echo '
-			<menu id="desktopmenu">
-				<ul class="reset dropmenu" id="menu_nav">';
 
-		foreach ($context['menu_buttons'] as $act => $button)
-		{
-			echo '
-					<li id="button_', $act, '">
-						<a class="', $button['active_button'] ? 'active ' : '', 'firstlevel" href="', $button['href'], '"', isset($button['target']) ? ' target="' . $button['target'] . '"' : '', '>
-							<span class="', !empty($button['sub_buttons']) ? 'parent ' : '' , isset($button['is_last']) ? 'last ' : '', 'firstlevel">', $button['title'], '</span>
-						</a>';
-			if (!empty($button['sub_buttons']))
-			{
-				echo '
-						<ul class="reset">';
-
-				foreach ($button['sub_buttons'] as $childbutton)
-				{
-					echo '
-							<li>
-								<a href="', $childbutton['href'], '"', isset($childbutton['target']) ? ' target="' . $childbutton['target'] . '"' : '', '>
-									<span', isset($childbutton['is_last']) ? ' class="last"' : '', '>', $childbutton['title'], !empty($childbutton['sub_buttons']) ? '...' : '', '</span>
-								</a>';
-					// 3rd level menus :)
-					if (!empty($childbutton['sub_buttons']))
-					{
-						echo '
-								<ul class="reset">';
-
-						foreach ($childbutton['sub_buttons'] as $grandchildbutton)
-							echo '
-									<li>
-										<a href="', $grandchildbutton['href'], '"', isset($grandchildbutton['target']) ? ' target="' . $grandchildbutton['target'] . '"' : '', '>
-											<span', isset($grandchildbutton['is_last']) ? ' class="last"' : '', '>', $grandchildbutton['title'], '</span>
-										</a>
-									</li>';
-
-						echo '
-								</ul>';
-					}
-
-					echo '
-							</li>';
-				}
-					echo '
-						</ul>';
-			}
-			echo '
-					</li>';
-		}
-
-		echo '
-				</ul>
-			</menu>';
-	}
+	echo '
+			</ul>
+			<div class="navigation__toggle">
+				<label class="navigation__link transition200ms" for="more" aria-hidden="true">&nbsp;</label>
+			</div>
+		</div>
+	</nav>';
 }
 
 // Generate a strip of buttons.
