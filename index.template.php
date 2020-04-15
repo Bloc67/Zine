@@ -169,11 +169,12 @@ function template_head_user()
 {
 	global $context, $settings, $options, $scripturl, $txt, $modSettings;
 
+	echo '
+				<ul class="reset mob horiz_menu circular">';
+	
 	// If the user is logged in, display stuff like their name, new messages, etc.
 	if ($context['user']['is_logged'])
 	{
-		echo '
-				<ul class="reset mob horiz_menu circular">';
 		
 		if (!empty($context['user']['avatar']))
 			echo '
@@ -200,13 +201,12 @@ function template_head_user()
 			echo '
 					<li class="openm"><a href="', $scripturl, '?action=moderate;area=reports">', sprintf($txt['mod_reports_waiting'], $context['open_mod_reports']), '</a></li>';
 
-		echo '
-				</ul>';
 	}
 	// Otherwise they're a guest - this time ask them to either register or login - lazy bums...
 	elseif (!empty($context['show_login_bar']))
 	{
 		echo '
+				
 				<script type="text/javascript" src="', $settings['default_theme_url'], '/scripts/sha1.js"></script>
 				<form id="guest_form" action="', $scripturl, '?action=login2" method="post" accept-charset="', $context['character_set'], '" ', empty($context['disable_login_hashing']) ? ' onsubmit="hashLoginPassword(this, \'' . $context['session_id'] . '\');"' : '', '>
 					<div class="info">', sprintf($txt['welcome_guest'], $txt['guest_title']), '</div>
@@ -234,6 +234,8 @@ function template_head_user()
 					<input type="hidden" name="hash_passwrd" value="" /><input type="hidden" name="', $context['session_var'], '" value="', $context['session_id'], '" />
 				</form>';
 	}
+	echo '
+				</ul>';
 }
 function template_head_news()
 {
@@ -318,68 +320,55 @@ function template_menu()
 	echo '
 	<nav class="navigation horiz_menu">
 		<input class="toggle" type="checkbox" id="more" aria-hidden="true" tabindex="-1"/>
-		<div class="navigation__inner">';
+		<div class="navigation__inner">
+			<ul class="navigation__list">';
 
-	$first = true;
 	foreach ($context['menu_buttons'] as $act => $button)
 	{
-		if($first)
-		{
-			echo '
-			<div class="navigation__logo">
-				<a class="', $button['active_button'] ? 'active ' : '', 'navigation__link" href="', $button['href'], '"', isset($button['target']) ? ' target="' . $button['target'] . '"' : '', '>
-					<span class="', !empty($button['sub_buttons']) ? 'parent ' : '' , isset($button['is_last']) ? 'last ' : '', 'firstlevel">', $button['title'], '</span>
-				</a>
-			</div>
-			<ul class="navigation__list">';
-			$first = false;
-		}
-		else
-		{
-			echo '
+		$button = str_replace(array('[',']'),array('<span class="circular2">','</span>'),$button);
+		echo '
 				<li id="button_', $act, '" class="navigation__item' , !empty($button['sub_buttons']) ? ' subs' : '' , '">
 					<a class="', $button['active_button'] ? 'active ' : '', 'navigation__link" href="', $button['href'], '"', isset($button['target']) ? ' target="' . $button['target'] . '"' : '', '>
 						<span class="', !empty($button['sub_buttons']) ? 'parent ' : '' , isset($button['is_last']) ? 'last ' : '', 'firstlevel">', $button['title'], '</span>
 					</a>';
-			if (!empty($button['sub_buttons']))
-			{
-				echo '
+		if (!empty($button['sub_buttons']))
+		{
+			echo '
 					<ul>';
 
-				foreach ($button['sub_buttons'] as $childbutton)
-				{
-					echo '
+			foreach ($button['sub_buttons'] as $childbutton)
+			{
+				echo '
 						<li>
 							<a href="', $childbutton['href'], '"', isset($childbutton['target']) ? ' target="' . $childbutton['target'] . '"' : '', '>
 								<span', isset($childbutton['is_last']) ? ' class="last"' : '', '>', $childbutton['title'], !empty($childbutton['sub_buttons']) ? '...' : '', '</span>
 							</a>';
-					// 3rd level menus :)
-					if (!empty($childbutton['sub_buttons']))
-					{
-						echo '
+				// 3rd level menus :)
+				if (!empty($childbutton['sub_buttons']))
+				{
+					echo '
 							<ul>';
 
-						foreach ($childbutton['sub_buttons'] as $grandchildbutton)
-							echo '
+					foreach ($childbutton['sub_buttons'] as $grandchildbutton)
+						echo '
 								<li>
 									<a href="', $grandchildbutton['href'], '"', isset($grandchildbutton['target']) ? ' target="' . $grandchildbutton['target'] . '"' : '', '>
 										<span', isset($grandchildbutton['is_last']) ? ' class="last"' : '', '>', $grandchildbutton['title'], '</span>
 									</a>
 								</li>';
 
-						echo '
+					echo '
 							</ul>';
-					}
-
-					echo '
-						</li>';
 				}
-					echo '
-					</ul>';
+
+				echo '
+						</li>';
 			}
-			echo '
-				</li>';
+				echo '
+					</ul>';
 		}
+		echo '
+				</li>';
 	}
 
 	echo '
