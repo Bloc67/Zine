@@ -13,10 +13,11 @@ function template_section_menu()
 	global $txt;
 
 	echo '
-	<menu id="boardindex_menu">
-		<ul>
-			<li>' , $txt['a_boardindex'] , '</li>
-			<li>' , $txt['a_infocenter'] , '</li>
+	<menu class="section_menu">
+		<ul class="reset">
+			<li data-section="#a_boardindex" class="active">' , $txt['a_boardindex'] , '</li>
+			<li data-section="">' , $txt['a_news'] , '</li>
+			<li data-section="#a_infocenter">' , $txt['a_infocenter'] , '</li>
 		</ul>
 	</menu>'; 
 }
@@ -28,7 +29,7 @@ function template_main()
 	global $context, $settings, $options, $txt, $scripturl, $modSettings;
 
 	echo '
-<article id="a_boardindex">
+<article id="a_boardindex" class="m_sections active">
 	<div class="a_boards">';
 
 	foreach ($context['categories'] as $category)
@@ -80,42 +81,32 @@ function template_main()
 
 	echo '
 </article>
-<aside>', template_info_center(), '</aside>';
-
-}
-
-function template_news_slider()
-{
-	global $context, $settings, $options, $txt, $scripturl, $modSettings;
+<aside id="a_infocenter" class="m_sections">', template_info_center(), '</aside>
+<aside id="a_news" class="m_sections">
+	<div id="newsfader">
+		<h3 class="catbg">	', $txt['news'], '</h3>
+		<ul class="reset" id="smfFadeScroller">';
 
 	// Show the news fader if there are things to show
 	if (!empty($context['news_lines']))
 	{
-		echo '
-	<div id="newsfader">
-		<div class="cat_bar">
-			<h3 class="catbg">
-				', $txt['news'], '
-			</h3>
-		</div>
-		<ul class="reset" id="smfFadeScroller"', empty($options['collapse_news_fader']) ? '' : ' style="display: none;"', '>';
-
 		foreach ($context['news_lines'] as $news)
 			echo '
-			<li class="smalltext">', $news, '</li>';
-
-		echo '
-		</ul>
-	</div>';
-		
-		return true;
+			<li>', $news, '</li>';
 	}
 	else
-		return false;
+		echo '
+			<li>', $txt['a_nonews'], '</li>';
+
+	echo '
+		</ul>
+	</div>
+</aside>';
+
+
 }
 
-/* kept mostly as default, to allow mods that adds duplicate code to it */
-
+/* kept mostly as default, to allow mods that adds code to it */
 function template_info_center()
 {
 	global $context, $settings, $options, $txt, $scripturl, $modSettings;

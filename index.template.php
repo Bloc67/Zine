@@ -126,7 +126,6 @@ function template_body_above()
 	</header>
 </section>
 <section id="linktree_section">' , theme_linktree() , '</section>
-<section id="news_section">' , template_head_news() , '</section>
 
 <section id="content_section">
 	' , function_exists('template_section_menu') ? template_section_menu() : '' , '
@@ -190,16 +189,16 @@ function template_head_user()
 		// Is the forum in maintenance mode?
 		if ($context['in_maintenance'] && $context['user']['is_admin'])
 			echo '
-					<li class="notice" title="', $txt['a_maintain'], '">' , substr($txt['maintain_mode_on'],0,1) , '</li>';
+					<li class="notice" title="', $txt['a_maintain'], '"><a id="maintain">' , substr($txt['a_maintain'],0,1) , '</a></li>';
 
 		// Are there any members waiting for approval?
 		if (!empty($context['unapproved_members']))
 			echo '
-					<li class="unapp">', $context['unapproved_members'] == 1 ? $txt['approve_thereis'] : $txt['approve_thereare'], ' <a href="', $scripturl, '?action=admin;area=viewmembers;sa=browse;type=approve">', $context['unapproved_members'] == 1 ? $txt['approve_member'] : $context['unapproved_members'] . ' ' . $txt['approve_members'], '</a> ', $txt['approve_members_waiting'], '</li>';
+					<li class="unapp"><a href="', $scripturl, '?action=admin;area=viewmembers;sa=browse;type=approve">', $context['unapproved_members']  , '</a></li>';
 
 		if (!empty($context['open_mod_reports']) && $context['show_open_reports'])
 			echo '
-					<li class="openm"><a href="', $scripturl, '?action=moderate;area=reports">', sprintf($txt['mod_reports_waiting'], $context['open_mod_reports']), '</a></li>';
+					<li class="openm"><a href="', $scripturl, '?action=moderate;area=reports">', $context['open_mod_reports'], '</a></li>';
 
 	}
 	// Otherwise they're a guest - this time ask them to either register or login - lazy bums...
@@ -279,7 +278,7 @@ function theme_linktree($force_show = false)
 	global $context, $settings, $options, $shown_linktree;
 
 	// If linktree is empty, just return - also allow an override.
-	if (empty($context['linktree']) || (!empty($context['dont_default_linktree']) && !$force_show))
+	if (empty($context['linktree']) || count($context['linktree'])==1 || (!empty($context['dont_default_linktree']) && !$force_show))
 		return;
 
 	echo '
