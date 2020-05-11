@@ -1,13 +1,21 @@
 <?php
-
-/*	@ Bloc 2019										*/
-/*	@	SMF 2.0.x										*/
+/**
+ * Simple Machines Forum (SMF)
+ *
+ * @package SMF
+ * @author Simple Machines
+ * @copyright 2011 Simple Machines
+ * @license http://www.simplemachines.org/about/smf/license.php BSD
+ *
+ * @version 2.0
+ */
 
 function template_options()
 {
 	global $context, $settings, $options, $scripturl, $txt;
 
 	$context['theme_options'] = array(
+		array(
 			'id' => 'show_board_desc',
 			'label' => $txt['board_desc_inside'],
 			'default' => true,
@@ -15,6 +23,16 @@ function template_options()
 		array(
 			'id' => 'show_children',
 			'label' => $txt['show_children'],
+			'default' => true,
+		),
+		array(
+			'id' => 'use_sidebar_menu',
+			'label' => $txt['use_sidebar_menu'],
+			'default' => true,
+		),
+		array(
+			'id' => 'show_no_avatars',
+			'label' => $txt['show_no_avatars'],
 			'default' => true,
 		),
 		array(
@@ -112,6 +130,16 @@ function template_options()
 			'default' => true,
 		),
 		array(
+			'id' => 'display_quick_reply',
+			'label' => $txt['display_quick_reply'],
+			'options' => array(
+				0 => $txt['display_quick_reply1'],
+				1 => $txt['display_quick_reply2'],
+				2 => $txt['display_quick_reply3']
+			),
+			'default' => true,
+		),
+		array(
 			'id' => 'display_quick_mod',
 			'label' => $txt['display_quick_mod'],
 			'options' => array(
@@ -130,10 +158,10 @@ function template_settings()
 
 	$context['theme_settings'] = array(
 		array(
-			'id' => 'mycss',
-			'label' => $txt['mycss'],
-			'description' => $txt['mycss_desc'],
-			'type' => 'textarea',
+			'id' => 'header_logo_url',
+			'label' => $txt['header_logo_url'],
+			'description' => $txt['header_logo_url_desc'],
+			'type' => 'text',
 		),
 		array(
 			'id' => 'smiley_sets_default',
@@ -141,6 +169,7 @@ function template_settings()
 			'options' => $context['smiley_sets'],
 			'type' => 'text',
 		),
+	'',
 		array(
 			'id' => 'show_mark_read',
 			'label' => $txt['enable_mark_as_read'],
@@ -149,19 +178,10 @@ function template_settings()
 			'id' => 'allow_no_censored',
 			'label' => $txt['allow_no_censored'],
 		),
-		array(
-			'id' => 'enable_news',
-			'label' => $txt['enable_random_news'],
-		),
 	'',
 		array(
 			'id' => 'show_newsfader',
 			'label' => $txt['news_fader'],
-		),
-		array(
-			'id' => 'newsfader_time',
-			'label' => $txt['admin_fader_delay'],
-			'type' => 'number',
 		),
 		array(
 			'id' => 'number_recent_posts',
@@ -221,6 +241,10 @@ function template_settings()
 		array(
 			'id' => 'show_bbc',
 			'label' => $txt['admin_bbc'],
+		),
+		array(
+			'id' => 'additional_options_collapsable',
+			'label' => $txt['additional_options_collapsable'],
 		),
 	);
 }

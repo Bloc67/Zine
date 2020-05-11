@@ -78,7 +78,7 @@ h1 a,h2 a,h3 a,h4 a,h5 a { color: #60686d; text-decoration: none;}
 menu, nav, section, article, main, footer, header { margin: 0; padding: 0; }
 
 /* SMF resets */
-h3.catbg {	font-size: 0.8rem !important; 	letter-spacing: 2px; }
+h3.catbg {	font-size: 1.2rem !important; clear: both; }
 h3 img { display: none; }
 h3 .floatright img { display: block; }
 
@@ -95,11 +95,10 @@ h3 .floatright img { display: block; }
 .clear_left { clear: left;}
 .clear_right { clear: right;}
 .fullwidth { width: 100%; display: block; }
-.smalltext, tr.smalltext th { font-size: 0.8rem;	}
-.tinytext { font-size: 0.7rem;	}
-.middletext { font-size: 0.9rem;}
-.normaltext { font-size: 1rem;	}
-.largetext { font-size: 1.4rem;}
+.smalltext, tr.smalltext th { font-size: inherit;	}
+.middletext { font-size: inherit;}
+.normaltext { font-size: inherit;	}
+.largetext { font-size: 1.inherit;}
 .centertext { margin: 0 auto;	text-align: center;}
 .righttext { margin-left: auto;	margin-right: 0;	text-align: right;}
 .lefttext { margin-left: 0;	margin-right: auto;	text-align: left;}
@@ -191,21 +190,6 @@ dl dt, dl dd { 	line-height: 1.1rem; }
 
 ul li { padding: 0.1rem 0 0.4rem 0; line-height: 1.3rem; }
 p { line-height: 1.5rem; }
-
-/* form controls - some defaults.. */
-input, select, button {
-    background: linear-gradient(180deg, #fbfdff, #f0f2f5) #f0f2f5;
-	height: 1.6rem;
-	color: #444;
-	border: solid 1px #bbb;
-	font-size: 0.8rem;
-	line-height: 1rem !important;
-	border-radius: 3px;
-}
-input[type=submit] {	border: solid 1px #bbb; }
-input[type=submit]:active, select:active, button:active {	border: solid 1px #888; }
-input { border: solid 1px #bbb; }
-input[type=submit]:hover, select:hover, button:hover {	background: #fff; cursor: pointer; }
 
 form { width: 100%; }
 
@@ -323,7 +307,7 @@ a.icon-new:after {
 .icon-calendar:before { content: '\e83c'; } 
 .icon-contrast:before { content: '\e83d'; }
 .icon-basket:before { content: '\e83e'; } 
-
+.icon-fire:before { content: '\f525'; }
 
 /* #####################################	*/
 /* sections */
@@ -401,28 +385,6 @@ body {background: #fff;}
 /* #####################################	*/
 
 .bbox { padding: 0 0 0.5rem 0; }
-.pagesection,.pagelinks { font-size: 0.8rem; }
-.pages, .pagelinks {padding: 0 0 0.4rem 0; }
-.pages { display: inline-block; }
-.pages .navPages, .page_index span, .page_index a {
-    display: inline-block;
-    background: #f0f0f0;
-    padding: 4px 8px;
-    border-radius: 3px;
-    border: solid 1px #ccc;
-}
-.pages .navPages {
-    background: #fff;
-    padding: 1px 8px;
-    font-size: 0.7rem;
-}
-.page_index span { background: teal; border-color: teal; color: white; }
-.pagelinks small {
-    font-size: 0.7rem !important;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-right: 0.5rem;
-}
 .post_options { margin: 0.4rem 0; padding: 0 1rem; list-style: none;}
 .optionsettings li,
 .post_options li {

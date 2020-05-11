@@ -1,132 +1,148 @@
 <?php
 
-/*	@ Bloc 2019										*/
-/*	@	SMF 2.0.x										*/
+/* @ Rebus89 theme */
+/*	@ Blocthemes 2020	*/
+/*	@	SMF 2.0.x	*/
 
 function a_boardindex($board, $category_id = '')
 {
 	global $context, $scripturl, $settings, $options, $modSettings, $txt;
 
 	echo '
-		<ul id="category_', $category_id, '_boards" class="reset a_boards_single">
-			<li class="a_board_subject">
-				<a class="a_subject" href="', $board['href'], '" name="b', $board['id'], '">', $board['name'], '</a>' , ($board['new'] || $board['children_new']) ? '<span class="icon-micro-new"></span>' : '';
-
-	// Has it outstanding posts for approval?
-	if ($board['can_approve_posts'] && ($board['unapproved_posts'] || $board['unapproved_topics']))
+		<ul class="reset">
+			<li id="board_', $board['id'], '" class="b_icon' , $board['is_redirect'] ? ' b_redirect' : '' , '">';
+	
+	if (!empty($context['a_avatars'][$board['last_post']['member']['id']]))
 		echo '
-				<a class="a_approval" href="', $scripturl, '?action=moderate;area=postmod;sa=', ($board['unapproved_topics'] > 0 ? 'topics' : 'posts'), ';brd=', $board['id'], ';', $context['session_var'], '=', $context['session_id'], '" title="', sprintf($txt['unapproved_posts'], $board['unapproved_topics'], $board['unapproved_posts']), '" class="moderation_link"><span class="a_icons a_moderation"></span></a>';
-
+				<a href="', $board['last_post']['member']['href'], '" class="avatar" style="background-image: url(', $context['a_avatars'][$board['last_post']['member']['id']], ');">&nbsp;</a>';
+	else
+		echo '
+				<a href="', $board['last_post']['member']['href'], '"  class="no_avatar">' , (substr($board['last_post']['member']['name'],0,1)) , '</a>';
 	echo '
 			</li>
-			<li class="a_board_description">
-				<p class="a_description">', $board['description'] , '</p>';
+			<li class="b_subject">
+				<a href="', ($board['is_redirect'] || $context['user']['is_guest'] ? $board['href'] : $scripturl . '?action=unread;board=' . $board['id'] . '.0;children'), '">';
+
+	// If the board or children is new, show an indicator.
+	if ($board['new'] || $board['children_new'])
+		echo '
+					<span class="board_icon ', $board['new'] ? 'new' : 'sub', '" title="', $txt['new_posts'], '"></span>';
+
+	echo '	</a>
+				<a href="', $board['href'], '">', $board['name'], '</a>
+			</li>
+			<li class="b_description">', $board['description'], '</li>
+			<li class="b_moderators' , !empty($board['moderators']) ? ' has_items' : '', '">';
 
 	// Show the "Moderators: ". Each has name, href, link, and id. (but we're gonna use link_moderators.)
 	if (!empty($board['moderators']))
 		echo '
-				<p class="a_description">', count($board['moderators']) == 1 ? $txt['moderator'] : $txt['moderators'], ': ', implode(', ', $board['link_moderators']), '</p>';
+				', count($board['moderators']) === 1 ? $txt['moderator'] : $txt['moderators'], ': ', implode(', ', $board['link_moderators']);
 
-	// Show some basic information about the number of posts, etc.
 	echo '
 			</li>
-			<li class="a_board_stats">
-				<span>' , $board['posts'], ' ', $board['is_redirect'] ? '' : ' <span style="opacity: 0.3;">|</span> '.$board['topics'], '</span>
+			<li class="b_stats">
+				', comma_format($board['posts']), ' <span>', $board['is_redirect'] ? $txt['redirects'] : $txt['posts'], $board['is_redirect'] ? '' : '</span> | ' . comma_format($board['topics']) . ' <span>' . $txt['board_topics'], '</span>
 			</li>
-			<li class="a_board_lastpost"' , !empty($options['hidelastpost_boardindex']) ? '': ' style="display: none;"' , '>';
+			<li class="b_last">';
 
 	if (!empty($board['last_post']['id']))
 		echo '
-					<span class="memb">
-						<span class="icon-right-small"></span>
-						<span class="item"><span class="icon-doc"></span>', $board['last_post']['link'], '</span>
-						<span class="item"><span class="icon-user-outline"></span>', $board['last_post']['member']['link'] , '</span>
-						<span class="item"><span class="icon-clock"></span>', $board['last_post']['time'],'</span>
-					</span>';
-	else
-		echo '
-					<span class="memb">&nbsp;</span>';
+				' , $board['last_post']['member']['link'] , ' ' , $txt['in'] , ' ' , $board['last_post']['link'] , ' <span class="b_time">' , $board['last_post']['time'] , '</span>';
 
 	echo '
 			</li>
-			<li class="a_board_avvy' , ($board['new'] || $board['children_new']) ? ' avvy_new'.($board['children_new'] ? '2' : '') : '' , '">
-				<span class="avvy avvy_not"></span>
-			</li>
-			<li class="a_board_childs">';
-	// Show the "Child Boards: ". (there's a link_children but we're going to bold the new ones...)
+			<li class="b_sub' , !empty($board['children']) ? ' has_items' : '', '">';
+
 	if (!empty($board['children']))
 	{
-		// Sort the links into an array with new boards bold so it can be imploded.
 		$children = array();
-		/* Each child in each board's children has:
-			id, name, description, new (is it new?), topics (#), posts (#), href, link, and last_post. */
+
 		foreach ($board['children'] as $child)
 		{
 			if (!$child['is_redirect'])
-				$child['link'] = '<a href="' . $child['href'] . '" ' . ($child['new'] ? 'class="new_posts" ' : '') . 'title="' . ($child['new'] ? $txt['new_posts'] : $txt['old_posts']) . ' (' . $txt['board_topics'] . ': ' . comma_format($child['topics']) . ', ' . $txt['posts'] . ': ' . comma_format($child['posts']) . ')">' . $child['name'] . ($child['new'] ? '</a> <a href="' . $scripturl . '?action=unread;board=' . $child['id'] . '" title="' . $txt['new_posts'] . ' (' . $txt['board_topics'] . ': ' . comma_format($child['topics']) . ', ' . $txt['posts'] . ': ' . comma_format($child['posts']) . ')"><img src="' . $settings['lang_images_url'] . '/new.gif" class="new_posts" alt="" />' : '') . '</a>';
+				$child['link'] = '<a href="' . $child['href'] . '" ' . ($child['new'] ? 'class="board_new_posts" ' : '') . 'title="' . ($child['new'] ? $txt['new_posts'] : $txt['old_posts']) . ' (' . $txt['board_topics'] . ': ' . comma_format($child['topics']) . ', ' . $txt['posts'] . ': ' . comma_format($child['posts']) . ')">' . $child['name'] . ($child['new'] ? '</a> <a ' . ($child['new'] ? 'class="new_posts" ' : '') . 'href="' . $scripturl . '?action=unread;board=' . $child['id'] . '" title="' . $txt['new_posts'] . ' (' . $txt['board_topics'] . ': ' . comma_format($child['topics']) . ', ' . $txt['posts'] . ': ' . comma_format($child['posts']) . ')"><span class="new_posts"></span>' : '') . '</a>';
 			else
 				$child['link'] = '<a href="' . $child['href'] . '" title="' . comma_format($child['posts']) . ' ' . $txt['redirects'] . '">' . $child['name'] . '</a>';
 
 			// Has it posts awaiting approval?
 			if ($child['can_approve_posts'] && ($child['unapproved_posts'] || $child['unapproved_topics']))
-				$child['link'] .= ' <a href="' . $scripturl . '?action=moderate;area=postmod;sa=' . ($child['unapproved_topics'] > 0 ? 'topics' : 'posts') . ';brd=' . $child['id'] . ';' . $context['session_var'] . '=' . $context['session_id'] . '" title="' . sprintf($txt['unapproved_posts'], $child['unapproved_topics'], $child['unapproved_posts']) . '" class="moderation_link">(!)</a>';
+				$child['link'] .= ' <a href="' . $scripturl . '?action=moderate;area=postmod;sa=' . ($child['unapproved_topics'] > 0 ? 'topics' : 'posts') . ';brd=' . $child['id'] . ';' . $context['session_var'] . '=' . $context['session_id'] . '" title="' . sprintf($txt['unapproved_posts'], $child['unapproved_topics'], $child['unapproved_posts']) . '" class="moderation_link"><i class="icon i-alert"></i></a>';
 
-			$children[] = $child['new'] ? '<strong>' . $child['link'] . '</strong>' : $child['link'];
+			$children[] = $child['link'];
 		}
 		echo '
-				<span class="icon-folder"></span> <span>', implode('</span>|<span>', $children), '</span>';
+				<span>', $txt['parent_boards'], ': </span>', implode(', ', $children);
 	}
 	echo '
 			</li>
 		</ul>';
+	
 }
 
 function a_topic($topic, $check = false)
 {
 	global $context, $scripturl, $settings, $options, $modSettings, $txt;
 
-	$exclass = '';
-	if($topic['is_sticky'])
-		$exclass .= '<span class="icon-pin-outline smaller red" title="' . $txt['sticky_topic'] . '"></span>';
-	if($topic['is_locked'])
-		$exclass .= '<span class="icon-lock smaller blue" title="' . $txt['locked_topic'] . '"></span>';
-	if($context['can_approve_posts'] && $topic['unapproved_posts'])
-		$exclass .= '<span class="icon-flag smaller orange" title="' . $txt['awaiting_approval'] . '"></span>';
-	if($topic['is_posted_in'])
-		$exclass .= '<span class="icon-comment smaller green" title="' . $txt['participation_caption'] . '"></span>';
-	if($topic['is_poll'])
-		$exclass .= '<span class="icon-chart-bar smaller" title="' . $txt['poll'] . '"></span>';
+	// fix the pagelinks
+	if(!empty($topic['pages']))
+	{
+		$fixed = str_replace(array('&#171;','&#187;'),array('',''),$topic['pages']);
+		$topic['pages'] = $fixed;
+	}
 
-	$hotish = '';
+	// add some type classes!	
+	$class = '';
+	if($topic['is_sticky'])
+		$class .= '<span class="stick"></span>';
+	if($topic['is_locked'])
+		$class .= '<span class="lock"></span>';
+
+	if($context['can_approve_posts'] && $topic['unapproved_posts'])
+		$class .= '<span class="unapp"></span>';
+	
+	$type = '';
+	if($topic['is_posted_in'])
+		$type .= '<span class="own"></span>';
+	if($topic['is_poll'])
+		$type .= '<span class="poll"></span>';
+
+	$hot = '';
 	if($topic['is_hot'])
-		$hotish =' hot';
+		$hot ='<span class="hot"></span>';
 	if($topic['is_very_hot'])
-		$hotish =' veryhot';
+		$hot ='<span class="veryhot"></span>';
 
 	echo '
-			<ul class="reset a_topics_single' ,  $hotish , $options['display_quick_mod'] != 1 ? ' boxes' : '' , '">
-				<li class="icon1"><img src="', $settings['images_url'], '/post/svg/', $topic['first_post']['icon'], '.svg" alt="" /></li>
-				<li class="subject">
-					<div ', (!empty($topic['quick_mod']['modify']) ? 'id="topic_' . $topic['first_post']['id'] . '" onmouseout="mouse_on_div = 0;" onmouseover="mouse_on_div = 1;" ondblclick="modify_topic(\'' . $topic['id'] . '\', \'' . $topic['first_post']['id'] . '\');"' : ''), '>
-						<span id="msg_' . $topic['first_post']['id'] . '">';
-						
+		<ul class="reset">
+			<li class="b_icon">' , $class;
+	
+	if (!empty($context['a_avatars'][$topic['first_post']['member']['id']]))
+		echo '
+				<a href="', $topic['first_post']['member']['href'], '" class="avatar" style="background-image: url(', $context['a_avatars'][$topic['first_post']['member']['id']], ');">&nbsp;</a>';
+	else
+		echo '
+				<a href="', $topic['first_post']['member']['href'], '"  class="no_avatar">' , (substr($topic['first_post']['member']['name'],0,1)) , '</a>';
+	echo '
+			</li>
+			<li class="b_subject">';
+
 	// Is this topic new? (assuming they are logged in!)
 	if ($topic['new'] && $context['user']['is_logged'])
 		echo '
-						<span class="active">', $topic['first_post']['link'],'</span><a href="', $topic['new_href'], '" id="newicon' . $topic['first_post']['id'] . '"><span class="icon-micro-new micro-small"></span></a> ';
-	else
-		echo $topic['first_post']['link'];
+				<span class="board_icon sub"></span>';
 
-	echo (!$context['can_approve_posts'] && !$topic['approved'] ? '&nbsp;<em class="red">(' . $txt['awaiting_approval'] . ')</em>' : ''), '</span> ' , $exclass, '
-					</div>
-				</li>
-				<li class="user">', $topic['first_post']['member']['link'], '</li>
-				<li class="pages">', convertPages($topic['pages']), '</li>
-				<li class="stats">', $topic['replies'], ' |	', $topic['views'], '</li>
-				<li class="lastpost">
-					<a href="', $topic['last_post']['href'], '"><span class="floatleft icon-chat-alt"></span> ', $topic['last_post']['time'], '</a> | ', $topic['last_post']['member']['link'], '
-				</li>
-				<li class="moderation">';
+	echo		$topic['first_post']['link'], '
+			</li>
+			<li class="b_description"> </li>
+			<li class="b_moderators"></li>
+			<li class="b_stats">', $topic['views'], ' ' , $txt['views'] , '</li>
+			<li class="b_last">
+				' , $topic['last_post']['member']['link'], ' ' , $txt['in'], ' ', $topic['last_post']['link'], ' <span class="b_time">', $topic['last_post']['time'], '</span>
+			</li>
+			<li class="b_sub has_items">
+				<span>', $hot, $topic['replies'], ' ' , $txt['replies'], '</span>
+				<span class="moderation">';
 
 	// Show the quick moderation options?
 	if (!empty($context['can_quick_mod']) || $check)
@@ -154,8 +170,10 @@ function a_topic($topic, $check = false)
 					<a href="', $scripturl, '?action=movetopic;board=', $context['current_board'], '.', $context['start'], ';topic=', $topic['id'], '.0"><span class="icon-forward-outline" title="', $txt['move_topic'], '"></span></a>';
 		}
 	}
-	echo '	</li>
-			</ul>';
+	echo '	</span>
+				<span class="pagelinks smaller">' , $topic['pages'], '</span>
+			</li>
+		</ul>';
 }
 
 ?>

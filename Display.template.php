@@ -668,7 +668,7 @@ function template_main()
 	call_integration_hook('integrate_mod_buttons', array(&$mod_buttons));
 
 	echo '
-	<div class="clear">', template_button_strip($mod_buttons, 'bottom', array('id' => 'moderationbuttons_strip')), '</div>';
+	<div>', template_button_strip($mod_buttons, 'bottom', array('id' => 'moderationbuttons_strip')), '</div>';
 
 	// Show the jumpto box, or actually...let Javascript do it.
 	echo '

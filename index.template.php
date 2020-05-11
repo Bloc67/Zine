@@ -110,7 +110,7 @@ function template_html_above()
 
 	echo '
 </head>
-<body' , function_exists('template_body_id') ? template_body_id() : ''   , '>';
+<body id="a_body">';
 }
 
 function template_body_above()
@@ -127,12 +127,16 @@ function template_body_above()
 </section>
 <section id="linktree_section">' , theme_linktree() , '</section>
 
-<section id="content_section">
+<section id="content_section" class="maxwidth">
 	' , function_exists('template_section_menu') ? template_section_menu() : '' , '
 	<main id="content_main">';
-	
-	// convert any pages
-	convertPageindex();
+
+	// fix the pagelinks
+	if(!empty($context['page_index']))
+	{
+		$fixed = str_replace(array('[',']'),array('',''),$context['page_index']);
+		$context['page_index'] = $fixed;
+	}
 }
 
 function template_body_below()
@@ -326,7 +330,7 @@ function template_menu()
 	{
 		$button = str_replace(array('[',']'),array('<span class="circular2">','</span>'),$button);
 		echo '
-				<li id="button_', $act, '" class="navigation__item' , !empty($button['sub_buttons']) ? ' subs' : '' , '">
+				<li id="button_', $act, '" class="navigation__item' , !empty($button['sub_buttons']) ? ' subs' : '' , $button['active_button'] ? ' current' : '','">
 					<a class="', $button['active_button'] ? 'active ' : '', 'navigation__link" href="', $button['href'], '"', isset($button['target']) ? ' target="' . $button['target'] . '"' : '', '>
 						<span class="', !empty($button['sub_buttons']) ? 'parent ' : '' , isset($button['is_last']) ? 'last ' : '', 'firstlevel">', $button['title'], '</span>
 					</a>';
@@ -341,26 +345,7 @@ function template_menu()
 						<li>
 							<a href="', $childbutton['href'], '"', isset($childbutton['target']) ? ' target="' . $childbutton['target'] . '"' : '', '>
 								<span', isset($childbutton['is_last']) ? ' class="last"' : '', '>', $childbutton['title'], !empty($childbutton['sub_buttons']) ? '...' : '', '</span>
-							</a>';
-				// 3rd level menus :)
-				if (!empty($childbutton['sub_buttons']))
-				{
-					echo '
-							<ul>';
-
-					foreach ($childbutton['sub_buttons'] as $grandchildbutton)
-						echo '
-								<li>
-									<a href="', $grandchildbutton['href'], '"', isset($grandchildbutton['target']) ? ' target="' . $grandchildbutton['target'] . '"' : '', '>
-										<span', isset($grandchildbutton['is_last']) ? ' class="last"' : '', '>', $grandchildbutton['title'], '</span>
-									</a>
-								</li>';
-
-					echo '
-							</ul>';
-				}
-
-				echo '
+							</a>
 						</li>';
 			}
 				echo '
@@ -398,7 +383,7 @@ function template_button_strip($button_strip, $direction = 'top', $strip_options
 		if (!isset($value['test']) || !empty($context[$value['test']]))
 		{
 			$buttons[] = '
-				<a' . (isset($value['id']) ? ' id="button_strip_' . $value['id'] . '"' : '') . ' class="button_strip_' . $key . (isset($value['active']) ? ' active' : ' bs hide') . '" href="' . $value['url'] . '"' . (isset($value['custom']) ? ' ' . $value['custom'] : '') . '><span class="button_submit buts">' . $txt[$value['text']] . '</span></a>';
+				<a' . (isset($value['id']) ? ' id="button_strip_' . $value['id'] . '"' : '') . ' class="button_strip_' . $key . (isset($value['active']) ? ' active' : ' bs hide') . '" href="' . $value['url'] . '"' . (isset($value['custom']) ? ' ' . $value['custom'] : '') . '>' . $txt[$value['text']] . '</a>';
 		}
 	}
 
@@ -406,32 +391,29 @@ function template_button_strip($button_strip, $direction = 'top', $strip_options
 	if (empty($buttons))
 		return;
 
-	if(count($button_strip)>1)
-		echo 	'
-	<span id="qubs_toggle' , $settings['qubs_counter'] , '" class=" icon-down-open floatright button_submit buts mobile" onclick="addclass2(\'qubs' ,  $settings['qubs_counter'] , '\', \'show\',\'qubs_toggle' ,  $settings['qubs_counter'] , '\', \'icon-up-open\');"></span>';
-
 	echo '		
 	<span class="qubs" id="qubs' , $settings['qubs_counter'] , '">', implode('', $buttons), '</span>';
 	
 	$settings['qubs_counter']++;
 }
 
-function get_avatars($ids = '')
+function get_avatars($ids)
 {
-	global $smcFunc, $user_profile, $scripturl, $modSettings, $settings, $boardurl, $image_proxy_enabled, $image_proxy_secret;
+	global $context, $smcFunc,$db_prefix, $user_profile, $scripturl, $modSettings, $settings, $boardurl, $image_proxy_enabled, $image_proxy_secret;
 	
 	if(empty($ids))
 		return;
+	else
+		$i = implode(',',array_keys($ids));
 
 	$request = $smcFunc['db_query']('','
 		SELECT mem.id_member, 
 		IFNULL(a.id_attach, 0) AS id_attach, a.filename, a.attachment_type, mem.avatar AS avatar
 		FROM {db_prefix}members AS mem
 		LEFT JOIN {db_prefix}attachments AS a ON (a.id_member = mem.id_member)
-		WHERE mem.id_member IN ({string:users})',
-		array( 'users'	=> $ids)
+		WHERE mem.id_member IN (' . $i . ')'
 	);
-	$avatars = array();
+	$context['a_avatars'] = array();
 	while ($row = $smcFunc['db_fetch_assoc']($request))
 	{		
 		$avatar = $row['avatar'] == '' ? ($row['id_attach'] > 0 ? (empty($row['attachment_type']) ? $scripturl . '?action=dlattach;attach=' . $row['id_attach'] . ';type=avatar' : $modSettings['custom_avatar_url'] . '/' . $row['filename']) : '') : (stristr($row['avatar'], 'http://') ? $row['avatar'] : $modSettings['avatar_url'] . '/' . $row['avatar']);
@@ -441,37 +423,10 @@ function get_avatars($ids = '')
 		if (empty($avatar))
 			$avatar = $settings['images_url']. '/noavatar.png';
 		
-		$avatars[$row['id_member']] = $avatar;
+		$context['a_avatars'][$row['id_member']] = $avatar;
 	}
 	$smcFunc['db_free_result']($request);
-	return $avatars;
-}
-
-function convertPageindex($custom = '')
-{
-	global $context, $txt;
-	
-	if(!empty($custom))
-	{
-		$return =  '<span class="page_index">' . (str_replace(array('[',']'), array('<span>','</span>'),$custom)) . '</span>';
-		return $return;
-	}	
-	
-	if(empty($context['page_index']))
-		return;
-
-	$context['page_index'] = '<span class="page_index">' . (str_replace(array('[',']'), array('<span>','</span>'),$context['page_index'])) . '</span>';
-}
-
-function convertPages($code= '')
-{
-	global $context, $txt;
-	
-	if(!empty($code))
-	{
-		$code = str_replace(array('&#171;','&#187;'), array('',''), $code);
-		echo $code;
-	}	
+	return;
 }
 
 ?>

@@ -4,19 +4,16 @@
 /*	@ Blocthemes 2020	*/
 /*	@	SMF 2.0.x	*/
 
-/* function to assign a id to the body */
-function template_body_id() { echo ' id="b_index"'; }
-
 /* function to add submenu on this page */
 function template_section_menu() 
 { 
-	global $txt;
+	global $txt, $settings;
 
 	echo '
 	<menu class="section_menu">
 		<ul class="reset">
 			<li data-section="#a_boardindex" class="active">' , $txt['a_boardindex'] , '</li>
-			<li data-section="">' , $txt['a_news'] , '</li>
+			' , !empty($settings['show_newsfader']) ? '<li data-section="#a_news">' . $txt['a_news'] . '</li>' : '' ,'
 			<li data-section="#a_infocenter">' , $txt['a_infocenter'] , '</li>
 		</ul>
 	</menu>'; 
@@ -28,8 +25,45 @@ function template_main()
 {
 	global $context, $settings, $options, $txt, $scripturl, $modSettings;
 
+	$ids = array();
+	// get the avatars
+	foreach ($context['categories'] as $category)
+	{
+		// If theres no parent boards we can see, avoid showing an empty category (unless its collapsed)
+		if (empty($category['boards']) && !$category['is_collapsed'])
+			continue;
+
+		// Assuming the category hasn't been collapsed...
+		if (!$category['is_collapsed'])
+		{
+			foreach ($category['boards'] as $board)
+			{
+				$ids[$board['last_post']['member']['id']] = $board['last_post']['member']['id'];
+			}
+		}
+	}
+	get_avatars($ids);
+
 	echo '
 <article id="a_boardindex" class="m_sections active">
+	<h3>' , $txt['a_boardindex'] , '</h3>
+	<div class="a_categories">
+		<ul class="reset category_list">';
+
+	foreach ($context['categories'] as $category)
+	{
+		// If theres no parent boards we can see, avoid showing an empty category (unless its collapsed)
+		if (empty($category['boards']) && !$category['is_collapsed'])
+			continue;
+
+		echo '
+			<li data-section="#category_',$category['id'],'">', $category['name'], '</li>';
+	}
+	
+	echo '
+		</ul>
+	</div>
+
 	<div class="a_boards">';
 
 	foreach ($context['categories'] as $category)
@@ -39,20 +73,19 @@ function template_main()
 			continue;
 
 		echo '
-		<h3 id="category_', $category['id'], '">';
+		<div class="category" id="category_', $category['id'], '">
+			<header class="category_header">';
 
 		// If this category even can collapse, show a link to collapse it.
 		if ($category['can_collapse'])
 			echo '
-			<a class="collapse" href="', $category['collapse_href'], '"></a>';
+				<a class="floatright icon-chevron icon-cheveron-outline-', $category['is_collapsed'] ? 'down' : 'up', '" href="', $category['collapse_href'], '" title="', $category['is_collapsed'] ? $txt['show'] : $txt['hide'], '"></a>';
 
-		if (!$context['user']['is_guest'] && !empty($category['show_unread']))
-		 echo '
-			<a class="unreadlink floatright" href="', $scripturl, '?action=unread;c=', $category['id'], '">', $txt['view_unread_category'], '</a>';
-
+		// The "category link" is only a link for logged in members. Guests just get the name.
 		echo '
-			', $category['link'], '
-		</h3>';
+				', $category['link'], '
+			</header>
+			<section class="forum_category">';
 
 		// Assuming the category hasn't been collapsed...
 		if (!$category['is_collapsed'])
@@ -62,6 +95,10 @@ function template_main()
 				a_boardindex($board, $category['id']);
 			}
 		}
+
+		echo '
+			</section>
+		</div>';
 	}
 	echo '
 	</div>';
@@ -82,26 +119,31 @@ function template_main()
 	echo '
 </article>
 <aside id="a_infocenter" class="m_sections">', template_info_center(), '</aside>
-<aside id="a_news" class="m_sections">
+<article id="a_news" class="m_sections">
 	<div id="newsfader">
-		<h3 class="catbg">	', $txt['news'], '</h3>
-		<ul class="reset" id="smfFadeScroller">';
+		<h3>', $txt['news'], '</h3>
+		<dl class="reset">';
 
+	$first = true;
 	// Show the news fader if there are things to show
 	if (!empty($context['news_lines']))
 	{
-		foreach ($context['news_lines'] as $news)
+		foreach ($context['news_lines'] as $b => $news)
+		{
 			echo '
-			<li>', $news, '</li>';
+			<dt>' , $b , '</dt>
+			<dd>', $news, '</dd>';
+			$first = false;
+		}
 	}
 	else
 		echo '
-			<li>', $txt['a_nonews'], '</li>';
+			<dt>', $txt['a_nonews'], '</dt><dd> </dd>';
 
 	echo '
-		</ul>
+		</dl>
 	</div>
-</aside>';
+</article>';
 
 
 }
@@ -113,7 +155,7 @@ function template_info_center()
 
 	// Here's where the "Info Center" starts...
 	echo '
-	<div class="roundframe"><div class="innerframe">
+	<div class="dframe"><div class="innerframe">
 		<div class="cat_bar">
 			<h3 class="catbg">
 				<img class="icon" id="upshrink_ic" src="', $settings['images_url'], '/collapse.gif" alt="*" title="', $txt['upshrink_description'], '" style="display: none;" />
@@ -261,24 +303,21 @@ function template_info_center()
 		echo ' (' . implode(', ', $bracketList) . ')';
 
 	echo $context['show_who'] ? '</a>' : '', '
-			</p>
-			<p class="inline smalltext">';
+';
 
 	// Assuming there ARE users online... each user in users_online has an id, username, name, group, href, and link.
 	if (!empty($context['users_online']))
 	{
 		echo '
-				', sprintf($txt['users_active'], $modSettings['lastActive']), ':<br />', implode(', ', $context['list_users_online']);
+				<br>	', sprintf($txt['users_active'], $modSettings['lastActive']), ':<br />', implode(', ', $context['list_users_online']);
 
 		// Showing membergroups?
 		if (!empty($settings['show_group_key']) && !empty($context['membergroups']))
 			echo '
-				<br />[' . implode(']&nbsp;&nbsp;[', $context['membergroups']) . ']';
+				<br>[' . implode(']&nbsp;&nbsp;[', $context['membergroups']) . ']';
 	}
 
-	echo '
-			</p>
-			<p class="last smalltext">
+	echo '	<br>
 				', $txt['most_online_today'], ': <strong>', comma_format($modSettings['mostOnlineToday']), '</strong>.
 				', $txt['most_online_ever'], ': ', comma_format($modSettings['mostOnline']), ' (', timeformat($modSettings['mostDate']), ')
 			</p>';
