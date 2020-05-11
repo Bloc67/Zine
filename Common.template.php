@@ -141,7 +141,7 @@ function a_topic($topic, $check = false)
 				' , $topic['last_post']['member']['link'], ' ' , $txt['in'], ' ', $topic['last_post']['link'], ' <span class="b_time">', $topic['last_post']['time'], '</span>
 			</li>
 			<li class="b_sub has_items">
-				<span>', $hot, $topic['replies'], ' ' , $txt['replies'], '</span>
+				<span>', $topic['replies'], ' ' , $txt['replies'], $hot, $type, '</span>
 				<span class="moderation">';
 
 	// Show the quick moderation options?
