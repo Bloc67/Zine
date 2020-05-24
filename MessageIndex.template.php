@@ -23,7 +23,8 @@ function template_board_info($hide_description = false)
 	global $context, $settings, $options, $scripturl, $modSettings, $txt, $board_info;
 
 	if(!empty($context['description']) && !$hide_description)
-		echo $context['description'];
+		echo '
+		<p>', $context['description'],'</p>';
 
 	if(!$hide_description)
 		echo '
@@ -38,10 +39,12 @@ function template_board_info($hide_description = false)
 	{
 		echo '
 		<div class="information2' , $hide_description ? ' noborder' : '' , '">';
+		
 		if ($settings['display_who_viewing'] == 1)
 			echo count($context['view_members']), ' ', count($context['view_members']) === 1 ? $txt['who_member'] : $txt['members'];
 		else
 			echo empty($context['view_members_list']) ? '0 ' . $txt['members'] : implode(', ', $context['view_members_list']) . ((empty($context['view_num_hidden']) or $context['can_moderate_forum']) ? '' : ' (+ ' . $context['view_num_hidden'] . ' ' . $txt['hidden'] . ')');
+		
 		echo $txt['who_and'], $context['view_num_guests'], ' ', $context['view_num_guests'] == 1 ? $txt['guest'] : $txt['guests'], $txt['who_viewing_board'], '
 		</div>';
 	}
@@ -54,6 +57,27 @@ function template_board_info($hide_description = false)
 			<span class="alert">!</span> ', $context['unapproved_posts_message'], '
 		</div>';
 	}
+	// some info on symbols used
+	if(!$hide_description)
+		echo '
+		<div class="symbols">
+			<dl>
+				<dt><span class="stick"></span></dt>
+				<dd>' , $txt['sticky_topic'] , '</dd>
+				<dt><span class="lock"></span></dt>
+				<dd>' , $txt['locked_topic'] , '</dd>
+				<dt><span class="unapp"></span></dt>
+				<dd>' , $txt['mc_unapproved_poststopics'] , '</dd>
+				<dt><span class="own"></span></dt>
+				<dd>' , $txt['participation_caption'] , '</dd>
+				<dt><span class="poll"></span></dt>
+				<dd>' , $txt['poll'] , '</dd>
+				<dt><span class="hot"></span></dt>
+				<dd>' , sprintf($txt['hot_topics'], $modSettings['hotTopicPosts']) , '</dd>
+				<dt><span class="veryhot"></span></dt>
+				<dd>' , sprintf($txt['very_hot_topics'], $modSettings['hotTopicVeryPosts'])  , '</dd>
+			</dl>
+		</div>';
 }
 
 function template_main()
@@ -89,7 +113,7 @@ function template_main()
 	{
 		echo '
 	<div class="a_boards">
-		<section class="forum_category">';
+		<section class="forumstyle">';
 
 		foreach ($context['boards'] as $board)
 		{
@@ -165,10 +189,10 @@ function template_main()
 		// No topics.... just say, "sorry bub".
 		else
 			echo '
-				<h3><strong>', $txt['msg_alert_none'], '</strong></h3>';
+				<h3 class="information2"><strong>', $txt['msg_alert_none'], '</strong></h3>';
 
 		echo '
-				<section class="forum_category">';
+				<section class="forumstyle">';
 
 		foreach ($context['topics'] as $topic)
 		{
@@ -228,39 +252,36 @@ function template_main()
 		</form>';
 
 		echo '
-		<div class="pagesection" style="margin-top: 5px;">
-		' , !empty($modSettings['topbottomEnable']) && !empty($context['topics']) ? '<a href="#a_messageindex" id="a_go_up">' . $txt['go_up'] . '</a>' : '', template_button_strip($normal_buttons, 'right'), '
-		', !empty($context['topics']) ? '<div class="pagelinks">'. $context['page_index']. '</div>' : '' , '
-		</div>';
+		<menu class="pagesection">
+			' , !empty($modSettings['topbottomEnable']) && !empty($context['topics']) ? $context['menu_separator'] . ' <a id="a_go_up" href="#bot">' . $txt['go_down'] . '</a>' : '', '
+			', template_button_strip($normal_buttons, 'right'), '
+			<p id="message_index_jump_to">&nbsp;</p>
+		</menu>';
 	}
-
 	echo '
-		<div id="topic_icons">
-			<div class="description">
-				<p id="message_index_jump_to">&nbsp;</p>
-
-				<script type="text/javascript"><!-- // --><![CDATA[
-					if (typeof(window.XMLHttpRequest) != "undefined")
-						aJumpTo[aJumpTo.length] = new JumpTo({
-							sContainerId: "message_index_jump_to",
-							sJumpToTemplate: "<label class=\"smalltext\" for=\"%select_id%\">', $context['jump_to']['label'], ':<" + "/label> %dropdown_list%",
-							iCurBoardId: ', $context['current_board'], ',
-							iCurBoardChildLevel: ', $context['jump_to']['child_level'], ',
-							sCurBoardName: "', $context['jump_to']['board_name'], '",
-							sBoardChildLevelIndicator: "==",
-							sBoardPrefix: "=> ",
-							sCatSeparator: "-----------------------------",
-							sCatPrefix: "",
-							sGoButtonLabel: "', $txt['quick_mod_go'], '"
-						});
-				// ]]></script>
-			</div>
-		</div>
+	</div>
+	<div class="pagesection" id="pageindex_below">
+		', !empty($context['topics']) ? '<div class="pagelinks">'. $context['page_index']. '</div>' : '' , '
 	</div>
 </article>';
 
-	// Javascript for inline editing.
 	echo '
+<script type="text/javascript"><!-- // --><![CDATA[
+	if (typeof(window.XMLHttpRequest) != "undefined")
+		aJumpTo[aJumpTo.length] = new JumpTo({
+			sContainerId: "message_index_jump_to",
+			sJumpToTemplate: "<label class=\"smalltext\" for=\"%select_id%\">', $context['jump_to']['label'], ':<" + "/label> %dropdown_list%",
+			iCurBoardId: ', $context['current_board'], ',
+			iCurBoardChildLevel: ', $context['jump_to']['child_level'], ',
+			sCurBoardName: "', $context['jump_to']['board_name'], '",
+			sBoardChildLevelIndicator: "==",
+			sBoardPrefix: "=> ",
+			sCatSeparator: "-----------------------------",
+			sCatPrefix: "",
+			sGoButtonLabel: "', $txt['quick_mod_go'], '"
+		});
+// ]]></script>
+
 <script type="text/javascript" src="' . $settings['default_theme_url'] . '/scripts/topic.js"></script>
 <script type="text/javascript"><!-- // --><![CDATA[
 

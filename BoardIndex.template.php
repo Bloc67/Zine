@@ -46,7 +46,7 @@ function template_main()
 
 	echo '
 <article id="a_boardindex" class="m_sections active">
-	<h3>' , $txt['a_boardindex'] , '</h3>
+	<h3><span>' , $txt['a_categories'] , '</span> <span>' , $txt['a_boardindex'] , '</span></h3>
 	<div class="a_categories">
 		<ul class="reset category_list">';
 
@@ -85,7 +85,7 @@ function template_main()
 		echo '
 				', $category['link'], '
 			</header>
-			<section class="forum_category">';
+			<section class="forumstyle">';
 
 		// Assuming the category hasn't been collapsed...
 		if (!$category['is_collapsed'])
@@ -131,7 +131,7 @@ function template_main()
 		foreach ($context['news_lines'] as $b => $news)
 		{
 			echo '
-			<dt>' , $b , '</dt>
+			<dt><span class="circular3">' , $b+1 , '</span></dt>
 			<dd>', $news, '</dd>';
 			$first = false;
 		}

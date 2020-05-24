@@ -136,6 +136,7 @@ function template_body_above()
 	{
 		$fixed = str_replace(array('[',']'),array('',''),$context['page_index']);
 		$context['page_index'] = $fixed;
+		$txt['pages'] = '';
 	}
 }
 
@@ -282,7 +283,7 @@ function theme_linktree($force_show = false)
 	global $context, $settings, $options, $shown_linktree;
 
 	// If linktree is empty, just return - also allow an override.
-	if (empty($context['linktree']) || count($context['linktree'])==1 || (!empty($context['dont_default_linktree']) && !$force_show))
+	if (empty($context['linktree']) || (!empty($context['dont_default_linktree']) && !$force_show))
 		return;
 
 	echo '
@@ -294,17 +295,12 @@ function theme_linktree($force_show = false)
 		echo '
 			<li', ($link_num == count($context['linktree']) - 1) ? ' class="last"' : '', '>';
 
-		// Show something before the link?
-		if (isset($tree['extra_before']))
-			echo $tree['extra_before'];
+		$before = isset($tree['extra_before']) ? '<span class="before">'.$tree['extra_before'].'</span>' : '';
+		$after = isset($tree['extra_after']) ? '<span class="after">'.$tree['extra_before'].'</span>' : '';
 
 		// Show the link, including a URL if it should have one.
 		echo isset($tree['url']) ? '
-				<a href="' . $tree['url'] . '"><span>' . $tree['name'] . '</span></a>' : '<span>' . $tree['name'] . '</span>';
-
-		// Show something after the link...?
-		if (isset($tree['extra_after']))
-			echo $tree['extra_after'];
+				<a href="' . $tree['url'] . '">' .$before. '<span>' . $tree['name'] . '</span>' . $after . '</a>' : '<a id="tree'.$link_num.'">' .$before . $tree['name'] . $after .'</span>';
 
 		echo '
 			</li>';
@@ -420,10 +416,8 @@ function get_avatars($ids)
 		if ($image_proxy_enabled && stripos($avatar, 'http://') !== false)
 			$avatar = strtr($boardurl, array('http://' => 'https://')) . '/proxy.php?request=' . urlencode($avatar) . '&hash=' . md5($avatar . $image_proxy_secret);
 		
-		if (empty($avatar))
-			$avatar = $settings['images_url']. '/noavatar.png';
-		
-		$context['a_avatars'][$row['id_member']] = $avatar;
+		if (!empty($avatar))
+			$context['a_avatars'][$row['id_member']] = $avatar;
 	}
 	$smcFunc['db_free_result']($request);
 	return;
