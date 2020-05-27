@@ -73,7 +73,7 @@ function template_main()
 		<div class="a_display_info">
 			', template_topic_info(true), '
 		</div>
-		<dl>';
+		<dl class="settings">';
 
 		foreach ($context['linked_calendar_events'] as $event)
 			echo '
@@ -99,27 +99,27 @@ function template_main()
 		if ($context['poll']['show_results'] || !$context['allow_vote'])
 		{
 			echo '
-		<dl class="options">';
+		<dl class="poll_options">';
 
 			// Show each option with its corresponding percentage bar.
 			foreach ($context['poll']['options'] as $option)
 			{
 				echo '
-			<dt class="', $option['voted_this'] ? ' voted' : '', '"><span class="text">', $option['option'], '</span></dt>
-			<dd class="', $option['voted_this'] ? ' voted' : '', '">';
+			<dt>', $option['option'], '</dt>
+			<dd>';
 
 				if ($context['allow_poll_view'])
 					echo '
-				<span class="barchart"><span style="width: ', $option['percent'] , '%;"></span></span>
-				<span class="percentage">', $option['votes'], ' (', $option['percent'], '%)</span>';
-				else
-					echo '
-				<span></span><span></span>';
+				<span class="barchart', $option['voted_this'] ? ' voted' : '', '">
+					<span class="bar">
+						<span style="width: ' . $option['percent'] . '%;"></span>
+					</span>
+					<span class="percent">', $option['percent'], '%</span>
+				</span>';
 
 				echo '
 			</dd>';
 			}
-
 			echo '
 		</dl>';
 

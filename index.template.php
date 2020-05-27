@@ -16,7 +16,7 @@ function template_init()
 	$settings['use_buttons'] = true;
 	$settings['separate_sticky_lock'] = true;
 	$settings['strict_doctype'] = false;
-	$settings['message_index_preview'] = false;
+	$settings['message_index_preview'] = true;
 	$settings['require_theme_strings'] = true;
 	$settings['show_member_bar'] = true;
 	$settings['qubs_counter'] = 1;
@@ -150,7 +150,7 @@ function template_body_below()
 
 <section id="footer_section">
 	<footer id="bottom_footer">
-		', theme_copyright();
+		<span>', theme_copyright(),'</span>';
 
 	// Show the load time?
 	if ($context['show_load_time'])
@@ -295,12 +295,17 @@ function theme_linktree($force_show = false)
 		echo '
 			<li', ($link_num == count($context['linktree']) - 1) ? ' class="last"' : '', '>';
 
-		$before = isset($tree['extra_before']) ? '<span class="before">'.$tree['extra_before'].'</span>' : '';
-		$after = isset($tree['extra_after']) ? '<span class="after">'.$tree['extra_before'].'</span>' : '';
+		// Show something before the link?
+		if (isset($tree['extra_before']))
+			echo $tree['extra_before'];
 
 		// Show the link, including a URL if it should have one.
 		echo isset($tree['url']) ? '
-				<a href="' . $tree['url'] . '">' .$before. '<span>' . $tree['name'] . '</span>' . $after . '</a>' : '<a id="tree'.$link_num.'">' .$before . $tree['name'] . $after .'</span>';
+				<a href="' . $tree['url'] . '"><span>' . $tree['name'] . '</span></a>' : '<span>' . $tree['name'] . '</span>';
+		
+		// Show something after the link...?
+		if (isset($tree['extra_after']))
+			echo $tree['extra_after'];
 
 		echo '
 			</li>';
