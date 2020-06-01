@@ -237,7 +237,7 @@ function a_message($message)
 	global $context, $settings, $options, $txt, $scripturl, $modSettings;
 
 	echo '
-		<ul class="reset">
+		<ul class="reset" id="msg', $message['id'] ,'">
 			<li class="b_icon">' , $class;
 	
 	if (!empty($message['member']['avatar']['href']))
@@ -250,6 +250,7 @@ function a_message($message)
 	echo '
 				<ol class="reset member_area">
 					<li class="member">', $message['member']['link'], '</li>';
+	
 	// Don't show these things for guests.
 	if (!$message['member']['is_guest'])
 	{
@@ -284,7 +285,7 @@ function a_message($message)
 			<li class="b_description">
 				<section class="post">';
 
-	if (!$message['approved'] && $message['member']['id'] != 0 && $message['member']['id'] == $context['user']['id'])
+	if (isset($message['approved']) && !$message['approved'] && $message['member']['id'] != 0 && $message['member']['id'] == $context['user']['id'])
 		echo '
 					<p class="approve_post information">', $txt['post_awaiting_approval'], '</p>';
 	echo '

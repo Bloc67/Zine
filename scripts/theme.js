@@ -36,13 +36,10 @@ $(document).on('click', '#help_modal_close', function() {
 // admin menu hide/show on mobile
 $(document).on('click', '#close-amenu', function() {
 	$('#amenu').toggleClass('hidden');
+	$('#open-amenu').toggleClass('beacon-menu');
 });
 $(document).on('click', '#open-amenu', function() {
 	$('#amenu').toggleClass('hidden');
-});
-
-// news advance
-$(document).on('click', '#close-amenu', function() {
-	$('#amenu').toggleClass('hidden');
+	$('#open-amenu').toggleClass('beacon-menu');
 });
 

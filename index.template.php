@@ -136,7 +136,6 @@ function template_body_above()
 	{
 		$fixed = str_replace(array('[',']'),array('',''),$context['page_index']);
 		$context['page_index'] = $fixed;
-		$txt['pages'] = '';
 	}
 }
 
