@@ -119,7 +119,7 @@ function template_body_above()
 
 	echo '
 <section id="header_section">
-	<header id="top_header">
+	<header id="top_header"' , !empty($context['show_login_bar']) ? ' class="guests"' : '' , '>
 		<h1 id="main_title"><a href="', $scripturl, '">' , $context['forum_name'] , '</a></h1>
 		<div id="main_menu">' , template_menu() , '</div>
 		<div class="user_menu">' , template_head_user() , '</div>
@@ -172,12 +172,12 @@ function template_head_user()
 {
 	global $context, $settings, $options, $scripturl, $txt, $modSettings;
 
-	echo '
-				<ul class="reset mob horiz_menu circular">';
-	
 	// If the user is logged in, display stuff like their name, new messages, etc.
 	if ($context['user']['is_logged'])
 	{
+		
+		echo '
+				<ul class="reset mob horiz_menu circular">';
 		
 		if (!empty($context['user']['avatar']))
 			echo '
@@ -204,17 +204,16 @@ function template_head_user()
 			echo '
 					<li class="openm"><a href="', $scripturl, '?action=moderate;area=reports">', $context['open_mod_reports'], '</a></li>';
 
+		echo '
+				</ul>';
 	}
 	// Otherwise they're a guest - this time ask them to either register or login - lazy bums...
 	elseif (!empty($context['show_login_bar']))
 	{
 		echo '
-				
 				<script type="text/javascript" src="', $settings['default_theme_url'], '/scripts/sha1.js"></script>
 				<form id="guest_form" action="', $scripturl, '?action=login2" method="post" accept-charset="', $context['character_set'], '" ', empty($context['disable_login_hashing']) ? ' onsubmit="hashLoginPassword(this, \'' . $context['session_id'] . '\');"' : '', '>
-					<div class="info">', sprintf($txt['welcome_guest'], $txt['guest_title']), '</div>
-					
-					<div class="multi_set">
+					<div class="onerow">
 						<input type="text" name="user" class="input_text" />
 						<input type="password" name="passwrd" class="input_text input_password" />
 						<select name="cookielength" class="input_select">
@@ -237,8 +236,6 @@ function template_head_user()
 					<input type="hidden" name="hash_passwrd" value="" /><input type="hidden" name="', $context['session_var'], '" value="', $context['session_id'], '" />
 				</form>';
 	}
-	echo '
-				</ul>';
 }
 function template_head_news()
 {

@@ -598,12 +598,10 @@ function template_send()
 		<div class="cat_bar">
 			<h3 class="catbg">', $context['preview_subject'], '</h3>
 		</div>
-		<div class="windowbg">
-			<span class="topslice"><span></span></span>
+		<div class="roundframe">
 			<div class="content">
 				', $context['preview_message'], '
 			</div>
-			<span class="botslice"><span></span></span>
 		</div>
 		<br />';
 
@@ -1014,10 +1012,8 @@ function template_rules()
 
 	echo '
 	<form action="', $scripturl, '?action=pm;sa=manrules" method="post" accept-charset="', $context['character_set'], '" name="manRules" id="manrules">
-		<div class="cat_bar">
-			<h3 class="catbg">', $txt['pm_manage_rules'], '</h3>
-		</div>
-		<div class="description">
+		<h3>', $txt['pm_manage_rules'], '</h3>
+		<div class="information">
 			', $txt['pm_manage_rules_desc'], '
 		</div>
 		<table width="100%" class="table_grid">
@@ -1258,11 +1254,8 @@ function template_add_rule()
 
 	echo '
 	<form action="', $scripturl, '?action=pm;sa=manrules;save;rid=', $context['rid'], '" method="post" accept-charset="', $context['character_set'], '" name="addrule" id="addrule" class="flow_hidden">
-		<div class="cat_bar">
-			<h3 class="catbg">', $context['rid'] == 0 ? $txt['pm_add_rule'] : $txt['pm_edit_rule'], '</h3>
-		</div>
-		<div class="windowbg">
-			<span class="topslice"><span></span></span>
+		<h3>', $context['rid'] == 0 ? $txt['pm_add_rule'] : $txt['pm_edit_rule'], '</h3>
+		<div class="information2">
 			<div class="content">
 				<dl class="addrules">
 					<dt class="floatleft">
@@ -1373,11 +1366,8 @@ function template_add_rule()
 					<a href="#" onclick="addActionOption(); return false;" id="addonjs2" style="display: none;">(', $txt['pm_rule_add_action'], ')</a>
 				</fieldset>
 			</div>
-			<span class="botslice"><span></span></span>
 		</div><br class="clear" />
-		<div class="cat_bar">
-			<h3 class="catbg">', $txt['pm_rule_description'], '</h3>
-		</div>
+		<h3 class="catbg">', $txt['pm_rule_description'], '</h3>
 		<div class="information">
 			<div id="ruletext">', $txt['pm_rule_js_disabled'], '</div>
 		</div>
