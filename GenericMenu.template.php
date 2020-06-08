@@ -1,13 +1,8 @@
 <?php
 
-/**
- * @package Blocthemes Admin
- * @version 1.2
- * @theme ShelfLife
- * @author Blocthemes - http://demos.bjornhkristiansen.com
- * Copyright (C) 2014-2016 - Blocthemes
- *
- */
+/* @ Rebus89 theme */
+/*	@ Blocthemes 2020	*/
+/*	@	SMF 2.0.x	*/
 
 // This contains the html for the side bar of the admin center, which is used for all admin pages.
 function template_generic_menu_sidebar_above()
@@ -65,8 +60,7 @@ function template_generic_menu_sidebar_above()
 		</ul>
 	</div>
 	<div class="admbody">
-		<div id="inner_admbody">
-			<span id="open-amenu" class="icon-menu"></span>';
+		<div id="inner_admbody">';
 
 	// If there are any "tabs" setup, this is the place to shown them.
 	if (!empty($context['tabs']) && empty($context['force_disable_tabs']))

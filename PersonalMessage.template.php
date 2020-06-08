@@ -145,10 +145,12 @@ function template_folder()
 		// Show the helpful titlebar - generally.
 		if ($context['display_mode'] != 1)
 			echo '
-				<h3>
+				<div class="cat_bar">
+					<h3 class="catbg">
 					<span id="author">', $txt['author'], '</span>
 					<span id="topic_title">', $txt[$context['display_mode'] == 0 ? 'messages' : 'conversation'], '</span>
-				</h3>';
+					</h3>
+				</div>';
 
 		// Show a few buttons if we are in conversation mode and outputting the first message.
 		if ($context['display_mode'] == 2)
@@ -166,9 +168,10 @@ function template_folder()
 
 		echo '
 				<section class="forumstyle" id="pm_section">';
+		
 		while ($message = $context['get_pmessage']('message'))
 		{
-			a_message($message);
+			a_pm($message);
 		}
 		echo '
 				</section>';
@@ -206,7 +209,8 @@ function template_subject_list()
 
 	$collabels = array('',$txt['date'],$txt['subject'],($context['from_or_to'] == 'from' ? $txt['from'] : $txt['to']),'');
 	echo '
-	<table class="table_grid">
+
+<table class="table_grid">
 	<thead>
 		<tr class="catbg">
 			<th align="center" width="4%" class="first_th">
@@ -270,10 +274,10 @@ function template_subject_list()
 
 	echo '
 	</tbody>
-	</table>
-	<menu class="pagesection">
-		<span>', $context['page_index'], '</span>
-		<span>&nbsp;';
+</table>
+<menu class="pagesection">
+	<span>', $context['page_index'], '</span>
+	<span>&nbsp;';
 
 	if ($context['show_delete'])
 	{
@@ -307,8 +311,8 @@ function template_subject_list()
 	}
 
 	echo '
-		</span>
-	</div>';
+	</span>
+</menu>';
 }
 
 function template_search()
@@ -847,7 +851,7 @@ function template_labels()
 		<div class="cat_bar">
 			<h3 class="catbg">', $txt['pm_manage_labels'], '</h3>
 		</div>
-		<div class="description">
+		<div class="information">
 			', $txt['pm_labels_desc'], '
 		</div>
 		<table width="100%" class="table_grid">
@@ -1012,7 +1016,9 @@ function template_rules()
 
 	echo '
 	<form action="', $scripturl, '?action=pm;sa=manrules" method="post" accept-charset="', $context['character_set'], '" name="manRules" id="manrules">
-		<h3>', $txt['pm_manage_rules'], '</h3>
+		<div class="cat_bar">
+			<h3 class="catbg">', $txt['pm_manage_rules'], '</h3>
+		</div>
 		<div class="information">
 			', $txt['pm_manage_rules_desc'], '
 		</div>
@@ -1254,20 +1260,19 @@ function template_add_rule()
 
 	echo '
 	<form action="', $scripturl, '?action=pm;sa=manrules;save;rid=', $context['rid'], '" method="post" accept-charset="', $context['character_set'], '" name="addrule" id="addrule" class="flow_hidden">
-		<h3>', $context['rid'] == 0 ? $txt['pm_add_rule'] : $txt['pm_edit_rule'], '</h3>
-		<div class="information2">
-			<div class="content">
-				<dl class="addrules">
-					<dt class="floatleft">
-						<strong>', $txt['pm_rule_name'], ':</strong><br />
-						<span class="smalltext">', $txt['pm_rule_name_desc'], '</span>
-					</dt>
-					<dd class="floatleft">
-						<input type="text" name="rule_name" value="', empty($context['rule']['name']) ? $txt['pm_rule_name_default'] : $context['rule']['name'], '" size="50" class="input_text" />
-					</dd>
-				</dl>
-				<fieldset>
-					<legend>', $txt['pm_rule_criteria'], '</legend>';
+		<div class="cat_bar">
+			<h3 class="catbg">', $context['rid'] == 0 ? $txt['pm_add_rule'] : $txt['pm_edit_rule'], '</h3>
+		</div>
+		<dl class="settings">
+			<dt>', $txt['pm_rule_name'], ':<br />
+				<span class="smalltext">', $txt['pm_rule_name_desc'], '</span>
+			</dt>
+			<dd>
+				<input type="text" name="rule_name" value="', empty($context['rule']['name']) ? $txt['pm_rule_name_default'] : $context['rule']['name'], '" size="50" class="input_text" />
+			</dd>
+		</dl>
+		<fieldset>
+			<legend>', $txt['pm_rule_criteria'], '</legend>';
 
 	// Add a dummy criteria to allow expansion for none js users.
 	$context['rule']['criteria'][] = array('t' => '', 'v' => '');
@@ -1282,27 +1287,27 @@ function template_add_rule()
 			echo '<br />';
 
 		echo '
-					<select name="ruletype[', $k, ']" id="ruletype', $k, '" onchange="updateRuleDef(', $k, '); rebuildRuleDesc();">
-						<option value="">', $txt['pm_rule_criteria_pick'], ':</option>
-						<option value="mid" ', $criteria['t'] == 'mid' ? 'selected="selected"' : '', '>', $txt['pm_rule_mid'], '</option>
-						<option value="gid" ', $criteria['t'] == 'gid' ? 'selected="selected"' : '', '>', $txt['pm_rule_gid'], '</option>
-						<option value="sub" ', $criteria['t'] == 'sub' ? 'selected="selected"' : '', '>', $txt['pm_rule_sub'], '</option>
-						<option value="msg" ', $criteria['t'] == 'msg' ? 'selected="selected"' : '', '>', $txt['pm_rule_msg'], '</option>
-						<option value="bud" ', $criteria['t'] == 'bud' ? 'selected="selected"' : '', '>', $txt['pm_rule_bud'], '</option>
-					</select>
-					<span id="defdiv', $k, '" ', !in_array($criteria['t'], array('gid', 'bud')) ? '' : 'style="display: none;"', '>
-						<input type="text" name="ruledef[', $k, ']" id="ruledef', $k, '" onkeyup="rebuildRuleDesc();" value="', in_array($criteria['t'], array('mid', 'sub', 'msg')) ? $criteria['v'] : '', '" class="input_text" />
-					</span>
-					<span id="defseldiv', $k, '" ', $criteria['t'] == 'gid' ? '' : 'style="display: none;"', '>
-						<select name="ruledefgroup[', $k, ']" id="ruledefgroup', $k, '" onchange="rebuildRuleDesc();">
-							<option value="">', $txt['pm_rule_sel_group'], '</option>';
+			<select name="ruletype[', $k, ']" id="ruletype', $k, '" onchange="updateRuleDef(', $k, '); rebuildRuleDesc();">
+				<option value="">', $txt['pm_rule_criteria_pick'], ':</option>
+				<option value="mid" ', $criteria['t'] == 'mid' ? 'selected="selected"' : '', '>', $txt['pm_rule_mid'], '</option>
+				<option value="gid" ', $criteria['t'] == 'gid' ? 'selected="selected"' : '', '>', $txt['pm_rule_gid'], '</option>
+				<option value="sub" ', $criteria['t'] == 'sub' ? 'selected="selected"' : '', '>', $txt['pm_rule_sub'], '</option>
+				<option value="msg" ', $criteria['t'] == 'msg' ? 'selected="selected"' : '', '>', $txt['pm_rule_msg'], '</option>
+				<option value="bud" ', $criteria['t'] == 'bud' ? 'selected="selected"' : '', '>', $txt['pm_rule_bud'], '</option>
+			</select>
+			<span id="defdiv', $k, '" ', !in_array($criteria['t'], array('gid', 'bud')) ? '' : 'style="display: none;"', '>
+				<input type="text" name="ruledef[', $k, ']" id="ruledef', $k, '" onkeyup="rebuildRuleDesc();" value="', in_array($criteria['t'], array('mid', 'sub', 'msg')) ? $criteria['v'] : '', '" class="input_text" />
+			</span>
+			<span id="defseldiv', $k, '" ', $criteria['t'] == 'gid' ? '' : 'style="display: none;"', '>
+				<select name="ruledefgroup[', $k, ']" id="ruledefgroup', $k, '" onchange="rebuildRuleDesc();">
+					<option value="">', $txt['pm_rule_sel_group'], '</option>';
 
 		foreach ($context['groups'] as $id => $group)
 			echo '
-							<option value="', $id, '" ', $criteria['t'] == 'gid' && $criteria['v'] == $id ? 'selected="selected"' : '', '>', $group, '</option>';
+					<option value="', $id, '" ', $criteria['t'] == 'gid' && $criteria['v'] == $id ? 'selected="selected"' : '', '>', $group, '</option>';
 		echo '
-						</select>
-					</span>';
+				</select>
+			</span>';
 
 		// If this is the dummy we add a means to hide for non js users.
 		if ($isFirst)
@@ -1362,12 +1367,12 @@ function template_add_rule()
 	}
 
 	echo '
-					<span id="actionAddHere"></span><br />
-					<a href="#" onclick="addActionOption(); return false;" id="addonjs2" style="display: none;">(', $txt['pm_rule_add_action'], ')</a>
-				</fieldset>
-			</div>
-		</div><br class="clear" />
-		<h3 class="catbg">', $txt['pm_rule_description'], '</h3>
+			<span id="actionAddHere"></span><br />
+			<a href="#" onclick="addActionOption(); return false;" id="addonjs2" style="display: none;">(', $txt['pm_rule_add_action'], ')</a>
+		</fieldset>
+		<div class="cat_bar">
+			<h3 class="catbg">', $txt['pm_rule_description'], '</h3>
+		</div>
 		<div class="information">
 			<div id="ruletext">', $txt['pm_rule_js_disabled'], '</div>
 		</div>
@@ -1398,8 +1403,12 @@ function template_add_rule()
 			document.getElementById("removeonjs1").style.display = "none";
 			document.getElementById("removeonjs2").style.display = "none";';
 
-	echo '
-			document.getElementById("addonjs1").style.display = "";
+	if (count($context['rule']['criteria']) <= $context['rule_limiters']['criteria'])
+		echo '
+			document.getElementById("addonjs1").style.display = "";';
+
+	if (count($context['rule']['actions']) <= $context['rule_limiters']['actions'])
+		echo '
 			document.getElementById("addonjs2").style.display = "";';
 
 	echo '

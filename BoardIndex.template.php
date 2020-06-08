@@ -79,7 +79,7 @@ function template_main()
 		// If this category even can collapse, show a link to collapse it.
 		if ($category['can_collapse'])
 			echo '
-				<a class="floatright icon-chevron icon-cheveron-outline-', $category['is_collapsed'] ? 'down' : 'up', '" href="', $category['collapse_href'], '" title="', $category['is_collapsed'] ? $txt['show'] : $txt['hide'], '"></a>';
+				<a href="', $category['collapse_href'], '" title="', $category['is_collapsed'] ? $txt['show'] : $txt['hide'], '"><span class="floatright icon-', $category['is_collapsed'] ? 'down' : 'up', '-open"></span></a>';
 
 		// The "category link" is only a link for logged in members. Guests just get the name.
 		echo '
@@ -94,15 +94,24 @@ function template_main()
 			{
 				a_boardindex($board, $category['id']);
 			}
+			if ($context['user']['is_logged'])
+			{
+				// Mark read button for a category.
+				$mark_read_cat_button = array(
+					'markreadcat'.$category['id'] => array('text' => 'mark_as_read', 'image' => 'markread.gif', 'lang' => true, 'url' => $scripturl . '?action=markasread;c='.$category['id'].';' . $context['session_var'] . '=' . $context['session_id']),
+				);
+
+				// Show the mark all as read button?
+				if ($settings['show_mark_read'] && !empty($context['categories']))
+					echo '
+					<menu class="pagesection">', template_button_strip($mark_read_cat_button, 'right'), '</menu>';
+			}
 		}
 
 		echo '
 			</section>
 		</div>';
 	}
-	echo '
-	</div>';
-
 	if ($context['user']['is_logged'])
 	{
 		// Mark read button.
@@ -113,8 +122,11 @@ function template_main()
 		// Show the mark all as read button?
 		if ($settings['show_mark_read'] && !empty($context['categories']))
 			echo '
-	<div class="a_markread">', template_button_strip($mark_read_button, 'right'), '</div>';
+			<menu class="pagesection">', template_button_strip($mark_read_button, 'right'), '</menu>';
 	}
+	echo '
+	</div>';
+
 
 	echo '
 </article>
@@ -122,26 +134,26 @@ function template_main()
 <article id="a_news" class="m_sections">
 	<div id="newsfader">
 		<h3>', $txt['news'], '</h3>
-		<dl class="reset">';
+		<ul class="reset">';
 
-	$first = true;
 	// Show the news fader if there are things to show
 	if (!empty($context['news_lines']))
 	{
 		foreach ($context['news_lines'] as $b => $news)
 		{
 			echo '
-			<dt><span class="circular3">' , $b+1 , '</span></dt>
-			<dd>', $news, '</dd>';
-			$first = false;
+			<li>
+				<h4>' , $b+1 , '</h4>
+				<p>', $news, '</p>
+			</li>';
 		}
 	}
 	else
 		echo '
-			<dt>', $txt['a_nonews'], '</dt><dd> </dd>';
+			<li><h4>', $txt['a_nonews'], '</h4></li>';
 
 	echo '
-		</dl>
+		</ul>
 	</div>
 </article>';
 

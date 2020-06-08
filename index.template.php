@@ -278,6 +278,9 @@ function theme_linktree($force_show = false)
 {
 	global $context, $settings, $options, $shown_linktree;
 
+	echo '
+		<span id="open-amenu" class="icon-menu"></span>';
+
 	// If linktree is empty, just return - also allow an override.
 	if (empty($context['linktree']) || (!empty($context['dont_default_linktree']) && !$force_show))
 		return;

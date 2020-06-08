@@ -238,7 +238,7 @@ function a_message($message)
 
 	echo '
 		<ul class="reset" id="msg', $message['id'] ,'">
-			<li class="b_icon">' , $class;
+			<li class="b_icon">';
 	
 	if (!empty($message['member']['avatar']['href']))
 		echo '
@@ -300,6 +300,47 @@ function a_message($message)
 			<li class="b_sub' , !empty($message['member']['signature']) ? ' has_items' : '' , '">
 				' , !empty($message['member']['signature']) ? '<div class="signature">'.$message['member']['signature'].'</div>' : '' , '
 			</li>
+		</ul>';
+}
+
+function a_pm($message)
+{
+	global $context, $settings, $options, $txt, $scripturl, $modSettings;
+
+	echo '
+		<ul class="reset" id="msg', $message['id'] ,'">
+			<li class="b_icon">';
+	
+	if (!empty($message['member']['avatar']['href']))
+		echo '
+				<a href="', $message['member']['href'], '" class="avatar' , !empty($message['member']['online']['is_online']) ? ' online-beacon' : '' , '" style="background-image: url(', $message['member']['avatar']['href'], ');">&nbsp;</a>';
+	else
+		echo '
+				<a href="', $message['member']['href'], '"  class="no_avatar' , !empty($message['member']['online']['is_online']) ? ' online-beacon' : '' , '">' , (substr($message['member']['name'],0,1)) , '</a>';
+
+	echo '
+				<ol class="reset member_area">
+					<li class="member">', $message['member']['link'], '</li>';
+	
+	// Show the member's primary group (like 'Administrator') if they have one.
+	if (!empty($message['member']['group']))
+		echo '
+					<li class="membergroup">', $message['member']['group'], '</li>';
+
+	echo '
+				</ol>
+			</li>
+			<li class="b_subject" id="subject_', $message['id'], '"><a href="', $message['href'], '" rel="nofollow">', $message['subject'], '</a></li>
+			<li class="b_description">
+				<section class="post">
+					<div class="inner" id="msg_', $message['id'], '">', $message['body'], '</div>
+				</section>
+			</li>
+			<li class="b_stats">' , $message['time'] , '</li>
+			<li class="b_last">
+				' , a_quickbuttons($message) , '
+			</li>
+			<li class="b_sub">	</li>
 		</ul>';
 }
 

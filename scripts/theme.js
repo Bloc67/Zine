@@ -23,14 +23,14 @@ $(document).ready(function() {
 		$.get(mLink,function(response){ 
 			$('#help_modal').html(response); 
 	   });	
-		$('#help_modal').show(0);
+		$('#help_modal').toggleClass('modalslidedown');
 		return false;
 	});
 });
 
 // close the help modal window
 $(document).on('click', '#help_modal_close', function() {
-	$('#help_modal').hide(0);
+	$('#help_modal').toggleClass('modalslidedown');
 });
 
 // admin menu hide/show on mobile

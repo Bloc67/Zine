@@ -18,14 +18,12 @@ function template_admin()
 	// Welcome message for the admin.
 	echo '
 	<div id="admincenter">
-		<div class="cat_bar">
-			<h3>';
+		<h3><span>',  $txt['admin_center'], '</span>';
 
 	if ($context['user']['is_admin'])
 		echo '
 			<object id="quick_search">
-				<form action="', $scripturl, '?action=admin;area=search" method="post" accept-charset="', $context['character_set'], '" class="floatright">
-					<img src="', $settings['images_url'] , '/filter.gif" alt="" />
+				<form action="', $scripturl, '?action=admin;area=search" method="post" accept-charset="', $context['character_set'], '" >
 					<input type="text" name="search_term" value="', $txt['admin_search'], '" onclick="if (this.value == \'', $txt['admin_search'], '\') this.value = \'\';" class="input_text" />
 					<select name="search_type">
 						<option value="internal"', (empty($context['admin_preferences']['sb']) || $context['admin_preferences']['sb'] == 'internal' ? ' selected="selected"' : ''), '>', $txt['admin_search_type_internal'], '</option>
@@ -36,9 +34,8 @@ function template_admin()
 				</form>
 			</object>';
 
-	echo $txt['admin_center'], '
-			</h3>
-		</div>
+	echo'
+		</h3>
 		<div class="roundframe">
 			<div id="welcome">
 				<strong>', $txt['hello_guest'], ' ', $context['user']['name'], '!</strong>
