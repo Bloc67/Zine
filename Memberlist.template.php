@@ -77,7 +77,7 @@ function template_main()
 			echo '
 				<tr ', empty($member['sort_letter']) ? '' : ' id="letter' . $member['sort_letter'] . '"', '>
 					<td class="windowbg2" data-label="' , array_shift($labels) ,'">
-						', $context['can_send_pm'] ? '<a href="' . $member['online']['href'] . '" title="' . $member['online']['text'] . '">' : '', $settings['use_image_buttons'] ? '<img src="' . $member['online']['image_href'] . '" alt="' . $member['online']['text'] . '" align="middle" />' : $member['online']['label'], $context['can_send_pm'] ? '</a>' : '', '
+						', $context['can_send_pm'] ? '<a href="' . $member['online']['href'] . '" title="' . $member['online']['text'] . '">' : '', '<span class="icon-contrast' , $member['online']['is_online'] ? ' online-round-beacon' : '' , '"></span>' , $context['can_send_pm'] ? '</a>' : '', '
 					</td>
 					<td class="windowbg lefttext" data-label="' , array_shift($labels) ,'">', $member['link'], '</td>
 					<td class="windowbg2" data-label="' , array_shift($labels) ,'">', $member['show_email'] == 'no' ? '' : '<a href="' . $scripturl . '?action=emailuser;sa=email;uid=' . $member['id'] . '" rel="nofollow"><img src="' . $settings['images_url'] . '/email_sm.gif" alt="' . $txt['email'] . '" title="' . $txt['email'] . ' ' . $member['name'] . '" /></a>', '</td>';
@@ -109,17 +109,17 @@ function template_main()
 		// Group and date.
 		echo '
 					<td class="windowbg lefttext" data-label="' , array_shift($labels) ,'">', empty($member['group']) ? $member['post_group'] : $member['group'], '</td>
-					<td class="windowbg lefttext" data-label="' , array_shift($labels) ,'">', $member['registered_date'], '</td>';
+					<td class="windowbg lefttext" data-label="' , array_shift($labels) ,'" style="white-space: nowrap; width: 8rem;">', $member['registered_date'], '</td>';
 
 		if (!isset($context['disabled_fields']['posts']))
 		{
 			echo '
-					<td class="windowbg2" style="white-space: nowrap" width="15" data-label="' , array_shift($labels) ,'">', $member['posts'], '</td>
-					<td class="windowbg statsbar" width="120">';
+					<td class="windowbg2" style="white-space: nowrap; width: 5rem;" data-label="' , array_shift($labels) ,'">', $member['posts'], '</td>
+					<td class="windowbg statsbar" style="width: 5rem;">';
 
 			if (!empty($member['post_percent']))
 				echo '
-						<span class="barchart" style="width: 100%;">
+						<span class="barchart singlebar">
 							<span class="bar">
 								<span style="width: ', $member['post_percent'], '%;"></span>
 							</span>
@@ -189,16 +189,16 @@ function template_search()
 							<strong>', $txt['search_for'], ':</strong>
 							<input type="text" name="search" value="', $context['old_search'], '" size="35" class="input_text" /> <input type="submit" name="submit" value="' . $txt['search'] . '" class="button_submit" />
 						</div>
-						<span>';
+						<div class="roundframe">';
 
 	$count = 0;
 	foreach ($context['search_fields'] as $id => $title)
 	{
 		echo '
-							<label for="fields-', $id, '"><input type="checkbox" name="fields[]" id="fields-', $id, '" value="', $id, '" ', in_array($id, $context['search_defaults']) ? 'checked="checked"' : '', ' class="input_check" />', $title, '</label><br />';
+							<label for="fields-', $id, '"><input type="checkbox" name="fields[]" id="fields-', $id, '" value="', $id, '" ', in_array($id, $context['search_defaults']) ? 'checked="checked"' : '', ' class="input_check" /> ', $title, '</label><br />';
 	}
 		echo '
-						</span>
+						</div>
 					</div>
 				</div>
 			</div>
