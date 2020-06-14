@@ -854,7 +854,7 @@ function template_labels()
 		<div class="information">
 			', $txt['pm_labels_desc'], '
 		</div>
-		<table width="100%" class="table_grid">
+		<table width="100%" class="table_grid nopadding">
 		<thead>
 			<tr class="catbg">
 				<th class="lefttext first_th">
@@ -913,25 +913,19 @@ function template_labels()
 		<div class="cat_bar">
 			<h3 class="catbg">', $txt['pm_label_add_new'], '</h3>
 		</div>
-		<div class="windowbg">
-			<span class="topslice"><span></span></span>
-			<div class="content">
-				<dl class="settings">
-					<dt>
-						<strong><label for="add_label">', $txt['pm_label_name'], '</label>:</strong>
-					</dt>
-					<dd>
-						<input type="text" id="add_label" name="label" value="" size="30" maxlength="30" class="input_text" />
-					</dd>
-				</dl>
-				<div class="righttext">
-					<input type="submit" name="add" value="', $txt['pm_label_add_new'], '" class="button_submit" />
-				</div>
-			</div>
-			<span class="botslice"><span></span></span>
+		<dl class="settings nopadding">
+			<dt>
+				<strong><label for="add_label">', $txt['pm_label_name'], '</label>:</strong>
+			</dt>
+			<dd>
+				<input type="text" id="add_label" name="label" value="" size="30" maxlength="30" class="input_text" />
+			</dd>
+		</dl>
+		<div class="righttext">
+			<input type="submit" name="add" value="', $txt['pm_label_add_new'], '" class="button_submit" />
 		</div>
 		<input type="hidden" name="', $context['session_var'], '" value="', $context['session_id'], '" />
-	</form><br />';
+	</form>';
 }
 
 // Template for reporting a personal message.
@@ -1066,12 +1060,12 @@ function template_rules()
 	echo '
 		</tbody>
 		</table>
-		<div class="righttext">
-			[<a href="', $scripturl, '?action=pm;sa=manrules;add;rid=0">', $txt['pm_add_rule'], '</a>]';
+		<div class="righttext buttons_rows">
+			<a href="', $scripturl, '?action=pm;sa=manrules;add;rid=0" class="active">', $txt['pm_add_rule'], '</a>';
 
 	if (!empty($context['rules']))
 		echo '
-			[<a href="', $scripturl, '?action=pm;sa=manrules;apply;', $context['session_var'], '=', $context['session_id'], '" onclick="return confirm(\'', $txt['pm_js_apply_rules_confirm'], '\');">', $txt['pm_apply_rules'], '</a>]';
+			<a href="', $scripturl, '?action=pm;sa=manrules;apply;', $context['session_var'], '=', $context['session_id'], '" onclick="return confirm(\'', $txt['pm_js_apply_rules_confirm'], '\');">', $txt['pm_apply_rules'], '</a>';
 
 	if (!empty($context['rules']))
 		echo '

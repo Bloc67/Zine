@@ -80,176 +80,234 @@ function template_unread()
 	global $context, $settings, $options, $txt, $scripturl, $modSettings;
 
 	$showCheckboxes = !empty($options['display_quick_mod']) && $options['display_quick_mod'] == 1 && $settings['show_mark_read'];
+
+	$ids = array();
+
+	// get the avatars
+	if(!empty($context['topics']))
+	{
+		foreach ($context['topics'] as $topic)
+		{
+			$ids[$topic['first_post']['member']['id']] = $topic['first_post']['member']['id'];
+		}
+	}
+	get_avatars($ids);
+
 	echo '
-	<div id="a_maside">
-		<h2 class="header_name">' , $context['showing_all_topics'] ? $txt['unread_topics_all'] : $txt['unread_topics_visit'] , '</h2>';
+<div id="a_maside" class="m_sections" style="display: none;">
+	<h3>' , $txt['a_maside'] , '</h3>
+	<div class="a_messageindex_info">
+		<ul class="reset category_list">
+			<li data-section="#category_',$category['id'],'">', $category['name'], '</li>
+		</ul>
+	</div>';
 
-
-	if ($showCheckboxes)
-		echo '
-		<form action="', $scripturl, '?action=quickmod" method="post" accept-charset="', $context['character_set'], '" name="quickModForm" id="quickModForm" style="margin: 0;">
-			<input type="hidden" name="', $context['session_var'], '" value="', $context['session_id'], '" />
-			<input type="hidden" name="qaction" value="markread" />
-			<input type="hidden" name="redirect_url" value="action=unread', (!empty($context['showing_all_topics']) ? ';all' : ''), $context['querystring_board_limits'], '" />';
+	echo '
+</div>
+<article id="a_messageindex" class="m_sections active">
+	<h3><span>' , $txt['unread_topics_visit'] ,' </span><span class="', !empty($context['topics']) ? 'pagelinks">'. $context['page_index'].'</span>' : '"> </span>' , '</h3>
+	<div class="a_categories">
+		<ul class="reset category_list">
+			<li><a href="', $scripturl, '?action=unread">' , !isset($_GET['all']) ? '<strong>' : '' ,  $txt['unread_topics_visit'] , !isset($_GET['all']) ? '</strong>' : '' , '</a></li>
+			<li><a href="', $scripturl, '?action=unread;all">' , isset($_GET['all']) ? '<strong>' : '' ,  $txt['unread_topics_all'] , isset($_GET['all']) ? '</strong>' : '' , '</a></li>
+			<li><a href="', $scripturl, '?action=unreadreplies">' ,  $txt['unread_replies'] , '</a></li>
+		</ul>
+	</div>
+	<div id="a_topics">';
 
 	if ($settings['show_mark_read'])
 	{
 		// Generate the button strip.
 		$mark_read = array(
-			'mark_read' => array('text' => !empty($context['no_board_limits']) ? 'mark_as_read' : 'mark_read_short', 'image' => 'markread.gif', 'lang' => true, 'url' => $scripturl . '?action=markasread;sa=' . (!empty($context['no_board_limits']) ? 'all' : 'board' . $context['querystring_board_limits']) . ';' . $context['session_var'] . '=' . $context['session_id']),
+			'markread' => array('text' => !empty($context['no_board_limits']) ? 'mark_as_read' : 'mark_read_short', 'image' => 'markread.gif', 'lang' => true, 'url' => $scripturl . '?action=markasread;sa=' . (!empty($context['no_board_limits']) ? 'all' : 'board' . $context['querystring_board_limits']) . ';' . $context['session_var'] . '=' . $context['session_id']),
 		);
 
 		if ($showCheckboxes)
-			$mark_read['markselectread'] = array('text' => 'quick_mod_markread','image' => 'markselectedread.gif','lang' => true,'url' => 'javascript:document.quickModForm.submit();',);
+			$mark_read['markselectread'] = array(
+				'text' => 'quick_mod_markread',
+				'image' => 'markselectedread.gif',
+				'lang' => true,
+				'url' => 'javascript:document.quickModForm.submit();',
+			);
 	}
 
 	if (!empty($context['topics']))
 	{
 		echo '
-			<div class="pagesection">
-				<div class="pagelinks">', $context['page_index'], '</div>';
+		<menu class="pagesection">
+			' , !empty($modSettings['topbottomEnable']) && !empty($context['topics']) ? $context['menu_separator'] . ' <a id="a_go_down" href="#bot">' . $txt['go_down'] . '</a>' : '', '
+			', template_button_strip($mark_read, 'right'), '
+		</menu>';
 
-		if (!empty($mark_read))
-			template_button_strip($mark_read, 'right');
-
-		echo '
-			</div>';
-
-		echo '
-			<ul class="reset a_topics_headers">
-				<li>
-					<a href="', $scripturl, '?action=unread', $context['showing_all_topics'] ? ';all' : '', $context['querystring_board_limits'], ';sort=subject', $context['sort_by'] == 'subject' && $context['sort_direction'] == 'up' ? ';desc' : '', '">', $txt['subject'], $context['sort_by'] == 'subject' ? ' <img src="' . $settings['images_url'] . '/sort_' . $context['sort_direction'] . '.gif" alt="" />' : '', '</a>
-					/ <a href="', $scripturl, '?action=unread', $context['showing_all_topics'] ? ';all' : '', $context['querystring_board_limits'], ';sort=replies', $context['sort_by'] == 'replies' && $context['sort_direction'] == 'up' ? ';desc' : '', '">', $txt['replies'], $context['sort_by'] == 'replies' ? ' <img src="' . $settings['images_url'] . '/sort_' . $context['sort_direction'] . '.gif" alt="" />' : '', '</a>';
-
-		// Show a "select all" box for quick moderation?
 		if ($showCheckboxes)
 			echo '
-					/ <a href="', $scripturl, '?action=unread', $context['showing_all_topics'] ? ';all' : '', $context['querystring_board_limits'], ';sort=last_post', $context['sort_by'] == 'last_post' && $context['sort_direction'] == 'up' ? ';desc' : '', '">', $txt['last_post'], $context['sort_by'] == 'last_post' ? ' <img src="' . $settings['images_url'] . '/sort_' . $context['sort_direction'] . '.gif" alt="" />' : '', '</a>
-					<input type="checkbox" onclick="invertAll(this, this.form, \'topics[]\');" class="input_check floatright" />';
-		else
-			echo '
-					/ <a href="', $scripturl, '?action=unread', $context['showing_all_topics'] ? ';all' : '', $context['querystring_board_limits'], ';sort=last_post', $context['sort_by'] == 'last_post' && $context['sort_direction'] == 'up' ? ';desc' : '', '">', $txt['last_post'], $context['sort_by'] == 'last_post' ? ' <img src="' . $settings['images_url'] . '/sort_' . $context['sort_direction'] . '.gif" alt="" />' : '', '</a>';
+		<form action="', $scripturl, '?action=quickmod" method="post" accept-charset="', $context['character_set'], '" name="quickModForm" id="quickModForm" style="margin: 0;">
+			<input type="hidden" name="', $context['session_var'], '" value="', $context['session_id'], '" />
+			<input type="hidden" name="qaction" value="markread" />
+			<input type="hidden" name="redirect_url" value="action=unread', (!empty($context['showing_all_topics']) ? ';all' : ''), $context['querystring_board_limits'], '" />';
+
 		echo '
-				</li>
-			</ul>';
+			<div id="messageindex">';
+
+		// Are there actually any topics to show?
+		if ($showCheckboxes)
+		{
+			// Show a "select all" box for quick moderation?
+			if (!empty($context['can_quick_mod']) && $options['display_quick_mod'] == 1)
+				echo '
+				<input type="checkbox" onclick="invertAll(this, this.form, \'topics[]\');" class="input_check floatright" />';
+		}
+	
+		echo '
+				<section class="forumstyle">';
 
 		foreach ($context['topics'] as $topic)
 		{
-			a_topic($topic, $showCheckboxes);
+			a_topic($topic, $showCheckboxes, true);
 		}
+		echo '
+				</section>
+				<a id="bot"></a>
+			</div>';
+
+		// Finish off the form - again.
+	if ($showCheckboxes)
+		echo '
+		</form>';
 
 		if (!empty($context['topics']) && !$context['showing_all_topics'])
 			$mark_read['readall'] = array('text' => 'unread_topics_all', 'image' => 'markreadall.gif', 'lang' => true, 'url' => $scripturl . '?action=unread;all' . $context['querystring_board_limits'], 'active' => true);
 
 		echo '
-			<div class="pagesection">';
-
-		if (!empty($mark_read))
-			template_button_strip($mark_read, 'right');
-
-		echo '
-				<div class="pagelinks">', $context['page_index'], '</div>
-			</div>';
+		<menu class="pagesection">
+			' , 	!empty($mark_read) ? template_button_strip($mark_read, 'right') : '' , '
+		</menu>';
 	}
-	else
-		echo '
-			<h3 class="header_name centertext">
-					', $context['showing_all_topics'] ? $txt['msg_alert_none'] : $txt['unread_topics_visit_none'], '
-			</h3>';
-
-	if ($showCheckboxes)
-		echo '
-		</form>';
 	echo '
-	</div>';
+	</div>
+	<div class="pagesection" id="pageindex_below">
+		', !empty($context['topics']) ? '<div class="pagelinks">'. $context['page_index']. '</div>' : '' , '
+	</div>
+</article>';
+
 }
 
 function template_replies()
 {
 	global $context, $settings, $options, $txt, $scripturl, $modSettings;
 
+	$ids = array();
+
+	// get the avatars
+	if(!empty($context['topics']))
+	{
+		foreach ($context['topics'] as $topic)
+		{
+			$ids[$topic['first_post']['member']['id']] = $topic['first_post']['member']['id'];
+		}
+	}
+	get_avatars($ids);
+
 	echo '
-	<div id="a_maside">
-		<h2 class="header_name">' , $txt['unread_replies'] , '</h2>';
+<div id="a_maside" class="m_sections" style="display: none;">
+	<h3>' , $txt['unread_replies'] , '</h3>
+	<div class="a_messageindex_info">
+		', template_board_info(true), '
+	</div>';
 
+	echo '
+</div>
+<article id="a_messageindex" class="m_sections active">
+	<h3><span></span><span class="', !empty($context['topics']) ? 'pagelinks">'. $context['page_index'].'</span>' : '"> </span>' , '</h3>
+	<div class="a_messageindex_info">
+		', template_board_info(false), '
+	</div>
+	<div id="a_topics">';
 
-	$showCheckboxes = !empty($options['display_quick_mod']) && $options['display_quick_mod'] == 1 && $settings['show_mark_read'];
-
-	if ($showCheckboxes)
-		echo '
-		<form action="', $scripturl, '?action=quickmod" method="post" accept-charset="', $context['character_set'], '" name="quickModForm" id="quickModForm" style="margin: 0;">
-			<input type="hidden" name="', $context['session_var'], '" value="', $context['session_id'], '" />
-			<input type="hidden" name="qaction" value="markread" />
-			<input type="hidden" name="redirect_url" value="action=unreadreplies', (!empty($context['showing_all_topics']) ? ';all' : ''), $context['querystring_board_limits'], '" />';
-
-	if (isset($context['topics_to_mark']) && !empty($settings['show_mark_read']))
+	if ($settings['show_mark_read'])
 	{
 		// Generate the button strip.
 		$mark_read = array(
-			'mark_read' => array('text' => 'mark_as_read', 'image' => 'markread.gif', 'lang' => true, 'url' => $scripturl . '?action=markasread;sa=unreadreplies;topics=' . $context['topics_to_mark'] . ';' . $context['session_var'] . '=' . $context['session_id']),
+			'markread' => array('text' => !empty($context['no_board_limits']) ? 'mark_as_read' : 'mark_read_short', 'image' => 'markread.gif', 'lang' => true, 'url' => $scripturl . '?action=markasread;sa=' . (!empty($context['no_board_limits']) ? 'all' : 'board' . $context['querystring_board_limits']) . ';' . $context['session_var'] . '=' . $context['session_id']),
 		);
 
 		if ($showCheckboxes)
-			$mark_read['markselectread'] = array('text' => 'quick_mod_markread','image' => 'markselectedread.gif','lang' => true,'url' => 'javascript:document.quickModForm.submit();',);
+			$mark_read['markselectread'] = array(
+				'text' => 'quick_mod_markread',
+				'image' => 'markselectedread.gif',
+				'lang' => true,
+				'url' => 'javascript:document.quickModForm.submit();',
+			);
 	}
 
-	if (!empty($context['topics']))
+	if (!$context['no_topic_listing'])
 	{
 		echo '
-			<div class="pagesection">
-				<div class="pagelinks">', $context['page_index'], '</div>';
+		<menu class="pagesection">
+			' , !empty($modSettings['topbottomEnable']) && !empty($context['topics']) ? $context['menu_separator'] . ' <a id="a_go_down" href="#bot">' . $txt['go_down'] . '</a>' : '', '
+			', template_button_strip($mark_read, 'right'), '
+		</menu>';
 
-		if (!empty($mark_read))
-			template_button_strip($mark_read, 'right');
+		$showCheckboxes = !empty($options['display_quick_mod']) && $options['display_quick_mod'] == 1 && $settings['show_mark_read'];
 
-		echo '
-			</div>';
-
-		echo '
-			<ul class="reset a_topics_headers">
-				<li>
-					<a href="', $scripturl, '?action=unreadreplies', $context['querystring_board_limits'], ';sort=subject', $context['sort_by'] === 'subject' && $context['sort_direction'] === 'up' ? ';desc' : '', '">', $txt['subject'], $context['sort_by'] === 'subject' ? ' <img src="' . $settings['images_url'] . '/sort_' . $context['sort_direction'] . '.gif" alt="" />' : '', '</a>
-					/ <a href="', $scripturl, '?action=unreadreplies', $context['querystring_board_limits'], ';sort=replies', $context['sort_by'] === 'replies' && $context['sort_direction'] === 'up' ? ';desc' : '', '">', $txt['replies'], $context['sort_by'] === 'replies' ? ' <img src="' . $settings['images_url'] . '/sort_' . $context['sort_direction'] . '.gif" alt="" />' : '', '</a>';
-
-		// Show a "select all" box for quick moderation?
 		if ($showCheckboxes)
+			echo '
+		<form action="', $scripturl, '?action=quickmod" method="post" accept-charset="', $context['character_set'], '" name="quickModForm" id="quickModForm" style="margin: 0;">
+			<input type="hidden" name="', $context['session_var'], '" value="', $context['session_id'], '" />
+			<input type="hidden" name="qaction" value="markread" />
+			<input type="hidden" name="redirect_url" value="action=unread', (!empty($context['showing_all_topics']) ? ';all' : ''), $context['querystring_board_limits'], '" />';
+
+		echo '
+			<div id="messageindex">';
+
+		// Are there actually any topics to show?
+		if ($showCheckboxes)
+		{
+			// Show a "select all" box for quick moderation?
+			if (!empty($context['can_quick_mod']) && $options['display_quick_mod'] == 1)
 				echo '
-					/ <a href="', $scripturl, '?action=unreadreplies', $context['querystring_board_limits'], ';sort=last_post', $context['sort_by'] === 'last_post' && $context['sort_direction'] === 'up' ? ';desc' : '', '">', $txt['last_post'], $context['sort_by'] === 'last_post' ? ' <img src="' . $settings['images_url'] . '/sort_' . $context['sort_direction'] . '.gif" alt="" />' : '', '</a>
-					<input type="checkbox" onclick="invertAll(this, this.form, \'topics[]\');" class="input_check floatright" />';
+				<input type="checkbox" onclick="invertAll(this, this.form, \'topics[]\');" class="input_check floatright" />';
+		}
+		// No topics.... just say, "sorry bub".
 		else
 			echo '
-					/ <a href="', $scripturl, '?action=unreadreplies', $context['querystring_board_limits'], ';sort=last_post', $context['sort_by'] === 'last_post' && $context['sort_direction'] === 'up' ? ';desc' : '', '">', $txt['last_post'], $context['sort_by'] === 'last_post' ? ' <img src="' . $settings['images_url'] . '/sort_' . $context['sort_direction'] . '.gif" alt="" />' : '', '</a>';
+				<h3 class="information2"><strong>', $txt['msg_alert_none'], '</strong></h3>';
+
 		echo '
-				</li>
-			</ul>';
+				<section class="forumstyle">';
 
 		foreach ($context['topics'] as $topic)
 		{
-			a_topic($topic, $showCheckboxes);
+			a_topic($topic);
 		}
-
 		echo '
-			<div class="pagesection">';
-
-		if (!empty($mark_read))
-			template_button_strip($mark_read, 'right');
-
-		echo '
-				<div class="pagelinks">', $context['page_index'], '</div>
+				</section>
+				<a id="bot"></a>
 			</div>';
-	}
-	else
-		echo '
-			<h3 class="header_name">
-				', $context['showing_all_topics'] ? $txt['msg_alert_none'] : $txt['unread_topics_visit_none'], '
-			</h3>';
 
+		// Finish off the form - again.
 	if ($showCheckboxes)
 		echo '
 		</form>';
 
+		if (!empty($context['topics']) && !$context['showing_all_topics'])
+			$mark_read['readall'] = array('text' => 'unread_topics_all', 'image' => 'markreadall.gif', 'lang' => true, 'url' => $scripturl . '?action=unread;all' . $context['querystring_board_limits'], 'active' => true);
+
+		echo '
+		<menu class="pagesection">
+			' , 	!empty($mark_read) ? template_button_strip($normal_buttons, 'right') : '' , '
+			<p id="message_index_jump_to">&nbsp;</p>
+		</menu>';
+	}
 	echo '
-	</div>';
+	</div>
+	<div class="pagesection" id="pageindex_below">
+		', !empty($context['topics']) ? '<div class="pagelinks">'. $context['page_index']. '</div>' : '' , '
+	</div>
+</article>';
+
+
+	
 }
 
 ?>

@@ -80,7 +80,7 @@ function a_boardindex($board, $category_id = '')
 	
 }
 
-function a_topic($topic, $check = false)
+function a_topic($topic, $check = false, $always_new = false)
 {
 	global $context, $scripturl, $settings, $options, $modSettings, $txt;
 
@@ -128,7 +128,7 @@ function a_topic($topic, $check = false)
 			<li class="b_subject">';
 
 	// Is this topic new? (assuming they are logged in!)
-	if ($topic['new'] && $context['user']['is_logged'])
+	if (($topic['new'] && $context['user']['is_logged']) || $always_new)
 		echo '
 				<a href="', $topic['new_href'], '" title="', $txt['new'], '" ><span class="board_icon sub"></span></span>';
 
