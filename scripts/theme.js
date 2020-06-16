@@ -43,3 +43,12 @@ $(document).on('click', '#open-amenu', function() {
 	$('#open-amenu').toggleClass('beacon-menu');
 });
 
+$(document).ready(function(){
+  $("*[title]").hover(function(){
+    $(this).attr("tooltip-data", $(this).attr("title"));
+    $(this).removeAttr("title");
+  }, function(){
+    $(this).attr("title", $(this).attr("tooltip-data"));
+    $(this).removeAttr("tooltip-data");
+  });
+});

@@ -18,4 +18,6 @@ $txt['a_calendar_linked_events'] = 'Calendar';
 $txt['a_news'] = 'Latest News';
 $txt['a_nonews'] = 'At this time there are no news.';
 
+$txt['a_new_posts'] = 'Go to new posts';
+
 ?>

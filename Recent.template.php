@@ -196,6 +196,8 @@ function template_replies()
 {
 	global $context, $settings, $options, $txt, $scripturl, $modSettings;
 
+	$showCheckboxes = !empty($options['display_quick_mod']) && $options['display_quick_mod'] == 1 && $settings['show_mark_read'];
+
 	$ids = array();
 
 	// get the avatars
@@ -210,17 +212,23 @@ function template_replies()
 
 	echo '
 <div id="a_maside" class="m_sections" style="display: none;">
-	<h3>' , $txt['unread_replies'] , '</h3>
+	<h3>' , $txt['a_maside'] , '</h3>
 	<div class="a_messageindex_info">
-		', template_board_info(true), '
+		<ul class="reset category_list">
+			<li data-section="#category_',$category['id'],'">', $category['name'], '</li>
+		</ul>
 	</div>';
 
 	echo '
 </div>
 <article id="a_messageindex" class="m_sections active">
-	<h3><span></span><span class="', !empty($context['topics']) ? 'pagelinks">'. $context['page_index'].'</span>' : '"> </span>' , '</h3>
-	<div class="a_messageindex_info">
-		', template_board_info(false), '
+	<h3><span>' , $txt['unread_topics_visit'] ,' </span><span class="', !empty($context['topics']) ? 'pagelinks">'. $context['page_index'].'</span>' : '"> </span>' , '</h3>
+	<div class="a_categories">
+		<ul class="reset category_list">
+			<li><a href="', $scripturl, '?action=unread">' , !isset($_GET['all']) ? '<strong>' : '' ,  $txt['unread_topics_visit'] , !isset($_GET['all']) ? '</strong>' : '' , '</a></li>
+			<li><a href="', $scripturl, '?action=unread;all">' , isset($_GET['all']) ? '<strong>' : '' ,  $txt['unread_topics_all'] , isset($_GET['all']) ? '</strong>' : '' , '</a></li>
+			<li><a href="', $scripturl, '?action=unreadreplies">' ,  $txt['unread_replies'] , '</a></li>
+		</ul>
 	</div>
 	<div id="a_topics">';
 
@@ -240,15 +248,13 @@ function template_replies()
 			);
 	}
 
-	if (!$context['no_topic_listing'])
+	if (!empty($context['topics']))
 	{
 		echo '
 		<menu class="pagesection">
 			' , !empty($modSettings['topbottomEnable']) && !empty($context['topics']) ? $context['menu_separator'] . ' <a id="a_go_down" href="#bot">' . $txt['go_down'] . '</a>' : '', '
 			', template_button_strip($mark_read, 'right'), '
 		</menu>';
-
-		$showCheckboxes = !empty($options['display_quick_mod']) && $options['display_quick_mod'] == 1 && $settings['show_mark_read'];
 
 		if ($showCheckboxes)
 			echo '
@@ -268,17 +274,13 @@ function template_replies()
 				echo '
 				<input type="checkbox" onclick="invertAll(this, this.form, \'topics[]\');" class="input_check floatright" />';
 		}
-		// No topics.... just say, "sorry bub".
-		else
-			echo '
-				<h3 class="information2"><strong>', $txt['msg_alert_none'], '</strong></h3>';
-
+	
 		echo '
 				<section class="forumstyle">';
 
 		foreach ($context['topics'] as $topic)
 		{
-			a_topic($topic);
+			a_topic($topic, $showCheckboxes, true);
 		}
 		echo '
 				</section>
@@ -295,8 +297,7 @@ function template_replies()
 
 		echo '
 		<menu class="pagesection">
-			' , 	!empty($mark_read) ? template_button_strip($normal_buttons, 'right') : '' , '
-			<p id="message_index_jump_to">&nbsp;</p>
+			' , 	!empty($mark_read) ? template_button_strip($mark_read, 'right') : '' , '
 		</menu>';
 	}
 	echo '
@@ -305,7 +306,6 @@ function template_replies()
 		', !empty($context['topics']) ? '<div class="pagelinks">'. $context['page_index']. '</div>' : '' , '
 	</div>
 </article>';
-
 
 	
 }

@@ -20,16 +20,20 @@ function a_boardindex($board, $category_id = '')
 				<a href="', $board['last_post']['member']['href'], '"  class="no_avatar">' , (substr($board['last_post']['member']['name'],0,1)) , '</a>';
 	echo '
 			</li>
-			<li class="b_subject">
-				<a href="', ($board['is_redirect'] || $context['user']['is_guest'] ? $board['href'] : $scripturl . '?action=unread;board=' . $board['id'] . '.0;children'), '">';
+			<li class="b_subject">';
 
 	// If the board or children is new, show an indicator.
 	if ($board['new'] || $board['children_new'])
 		echo '
-					<span class="board_icon ', $board['new'] ? 'new' : 'sub', '" title="', $txt['new_posts'], '"></span>';
+				<span class="board_icon ', $board['new'] ? 'new' : 'sub', '" title="', $txt['new_posts'], '"></span>';
 
-	echo '	</a>
-				<a href="', $board['href'], '">', $board['name'], '</a>
+	echo '	<a href="', $board['href'], '">', $board['name'], '</a>';
+
+	if ($board['new'] || $board['children_new'])
+		echo '
+				<a href="', ($board['is_redirect'] || $context['user']['is_guest'] ? $board['href'] : $scripturl . '?action=unread;board=' . $board['id'] . '.0;children'), '" title="', $txt['a_new_posts'], '"><span class="icon-forward-outline blue"></span></a>';
+	
+	echo '
 			</li>
 			<li class="b_description">', $board['description'], '</li>
 			<li class="b_moderators' , !empty($board['moderators']) ? ' has_items' : '', '">';
@@ -130,9 +134,15 @@ function a_topic($topic, $check = false, $always_new = false)
 	// Is this topic new? (assuming they are logged in!)
 	if (($topic['new'] && $context['user']['is_logged']) || $always_new)
 		echo '
-				<a href="', $topic['new_href'], '" title="', $txt['new'], '" ><span class="board_icon sub"></span></span>';
+				<span class="board_icon sub"></span>';
 
-	echo		$topic['first_post']['link'], '
+	echo		$topic['first_post']['link'];
+
+	if (($topic['new'] && $context['user']['is_logged']) || $always_new)
+		echo '
+				<a href="', $topic['new_href'], '" title="', $txt['a_new_posts'], '" ><span class="icon-forward-outline blue"></span></a>';
+
+	echo '
 			</li>
 			<li class="b_description"> </li>
 			<li class="b_moderators"></li>
