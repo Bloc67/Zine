@@ -1,7 +1,8 @@
 <?php
 
-/*	@ Bloc 2019										*/
-/*	@	SMF 2.0.x										*/
+/* @ Zine theme */
+/*	@ Blocthemes 2020	*/
+/*	@	SMF 2.0.x	*/
 
 function template_main()
 {

@@ -1,6 +1,6 @@
 <?php
 
-/* @ Rebus89 theme */
+/* @ Zine theme */
 /*	@ Blocthemes 2020	*/
 /*	@	SMF 2.0.x	*/
 

@@ -1,14 +1,8 @@
 <?php
-/**
- * Simple Machines Forum (SMF)
- *
- * @package SMF
- * @author Simple Machines
- * @copyright 2011 Simple Machines
- * @license http://www.simplemachines.org/about/smf/license.php BSD
- *
- * @version 2.0.16
- */
+
+/* @ Zine theme */
+/*	@ Blocthemes 2020	*/
+/*	@	SMF 2.0.x	*/
 
 // Template for the profile side bar - goes before any other profile template.
 function template_profile_above()
@@ -1049,9 +1043,9 @@ function template_statPanel()
 		{
 			echo '
 						<dt>', $board['link'], '</dt>
-						<dd class="statsbar">
+						<dd class="statsbar" title="', $board['percent'], '%">
 							<span class="bar">
-								<span style="width: ', $board['post_percent'], '%;"></span>
+								<span style="width: ', $board['posts_percent'], '%;"></span>
 							</span>
 							<span class="righttext">', empty($context['hide_num_posts']) ? $board['posts'] : '', '</span>
 						</dd>';
@@ -1088,7 +1082,7 @@ function template_statPanel()
 						<dt>', $activity['link'], '</dt>
 						<dd class="statsbar">
 							<span class="bar">
-								<span style="width: ', $activity['post_percent'], '%;"></span>
+								<span style="width: ', $activity['posts_percent'], '%;"></span>
 							</span>
 							<span class="righttext">', $activity['posts'], '</span>
 						</dd>';

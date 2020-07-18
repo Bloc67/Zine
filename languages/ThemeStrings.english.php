@@ -1,5 +1,9 @@
 <?php
 
+/* @ Zine theme */
+/*	@ Blocthemes 2020	*/
+/*	@	SMF 2.0.x	*/
+
 $txt['a_unread'] = 'Unread';
 $txt['a_replies'] = 'Replies';
 $txt['a_options'] = 'Options';
