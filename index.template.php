@@ -157,7 +157,7 @@ function template_body_below()
 		<small>', $txt['page_created'], $context['load_time'], $txt['seconds_with'], $context['load_queries'], $txt['queries'], '</small>';
 
 	echo '
-		<small><a href="https://github.com/blocthemes/Rebus89" target="_blank">Rebus89 | Bloc | v1.0</small>
+		<small><a href="https://github.com/blocthemes/Zine" target="_blank">Zine theme by Bloc</small>
 	</footer>
 </section>';
 }
@@ -426,5 +426,12 @@ function get_avatars($ids)
 	$smcFunc['db_free_result']($request);
 	return;
 }
+
+function fix_pageindex($c)
+{
+	$fixed = str_replace(array('[',']'),array('',''),$c);
+	return $fixed;
+}
+
 
 ?>

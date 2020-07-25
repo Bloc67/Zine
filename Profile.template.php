@@ -331,8 +331,8 @@ function template_showPosts()
 				', (!isset($context['attachments']) && empty($context['is_topics']) ? $txt['showMessages'] : (!empty($context['is_topics']) ? $txt['showTopics'] : $txt['showAttachments'])), ' - ', $context['member']['name'], '
 			</h3>
 		</div>
-		<div class="pagesection">
-			<span>', $txt['pages'], ': ', $context['page_index'], '</span>
+		<div class="pagelinks">
+			<span>', $context['page_index'], '</span>
 		</div>';
 
 	// Button shortcuts
@@ -402,7 +402,6 @@ function template_showPosts()
 
 			echo '
 				<br class="clear" />
-				<span class="botslice"><span></span></span>
 			</div>
 		</div>';
 		}
@@ -431,11 +430,13 @@ function template_showPosts()
 							', ($context['sort_order'] == 'subject' ? '<img src="' . $settings['images_url'] . '/sort_' . ($context['sort_direction'] == 'down' ? 'down' : 'up') . '.gif" alt="" />' : ''), '
 						</a>
 					</th>
-					<th class="last_th lefttext" scope="col">
+					<th class="lefttext" scope="col">
 						<a href="', $scripturl, '?action=profile;u=', $context['current_member'], ';area=showposts;sa=attach;sort=posted', ($context['sort_direction'] == 'down' && $context['sort_order'] == 'posted' ? ';asc' : ''), '">
 						', $txt['show_attach_posted'], '
 						', ($context['sort_order'] == 'posted' ? '<img src="' . $settings['images_url'] . '/sort_' . ($context['sort_direction'] == 'down' ? 'down' : 'up') . '.gif" alt="" />' : ''), '
 						</a>
+					</th>
+					<th class="last_th lefttext" scope="col">
 					</th>
 				</tr>
 			</thead>
@@ -451,6 +452,11 @@ function template_showPosts()
 					<td align="center">', $attachment['downloads'], '</td>
 					<td><a href="', $scripturl, '?topic=', $attachment['topic'], '.msg', $attachment['msg'], '#msg', $attachment['msg'], '" rel="nofollow">', $attachment['subject'], '</a></td>
 					<td>', $attachment['posted'], '</td>
+					<td>
+						<a href="'. $scripturl. '?action=dlattach;topic='. $attachment['topic']. '.0;attach='. $attachment['id']. '">
+							<span style="background-image: url(' . $scripturl. '?action=dlattach;topic='. $attachment['topic']. '.0;attach='. $attachment['id']. ';image);" class="minithumb"></span>
+						</a>
+					</td>
 				</tr>';
 			$alternate = !$alternate;
 		}
@@ -470,8 +476,8 @@ function template_showPosts()
 	}
 	// Show more page numbers.
 	echo '
-		<div class="pagesection" style="margin-bottom: 0;">
-			<span>', $txt['pages'], ': ', $context['page_index'], '</span>
+		<div class="pagelinks" style="margin-bottom: 0;">
+			<span>', $context['page_index'], '</span>
 		</div>';
 }
 
@@ -1132,7 +1138,6 @@ function template_edit_options()
 
 	echo '
 			<div class="windowbg2">
-				<span class="topslice"><span></span></span>
 				<div class="content">';
 
 	// Any bits at the start?
@@ -1440,7 +1445,7 @@ function template_profile_theme_settings()
 	echo '
 							<dd></dd>
 						</dl>
-						<ul id="theme_settings">
+						<ul id="theme_settings" class="reset">
 							<li>
 								<input type="hidden" name="default_options[show_board_desc]" value="0" />
 								<label for="show_board_desc"><input type="checkbox" name="default_options[show_board_desc]" id="show_board_desc" value="1"', !empty($context['member']['options']['show_board_desc']) ? ' checked="checked"' : '', ' class="input_check" /> ', $txt['board_desc_inside'], '</label>
@@ -1566,12 +1571,11 @@ function template_notification()
 	echo '
 			<div class="cat_bar">
 				<h3 class="catbg">
-					<span class="ie6_header floatleft"><img src="', $settings['images_url'], '/icons/profile_sm.gif" alt="" class="icon" />', $txt['profile'], '</span>
+					', $txt['profile'], '
 				</h3>
 			</div>
 			<p class="windowbg description">', $txt['notification_info'], '</p>
 			<div class="windowbg2">
-				<span class="topslice"><span></span></span>
 				<div class="content">
 					<form action="', $scripturl, '?action=profile;area=notification;save" method="post" accept-charset="', $context['character_set'], '" id="notify_options" class="flow_hidden">';
 
@@ -1617,7 +1621,6 @@ function template_notification()
 						</div><br class="clear" />
 					</form>
 				</div>
-				<span class="botslice"><span></span></span>
 			</div>
 			<br />';
 
@@ -1824,7 +1827,7 @@ function template_ignoreboards()
 		<div class="windowbg2">
 			<span class="topslice"><span></span></span>
 			<div class="content flow_hidden">
-				<ul class="ignoreboards floatleft">';
+				<ul class="ignoreboards floatleft reset">';
 
 	$i = 0;
 	$limit = ceil($context['num_boards'] / 2);
@@ -1851,7 +1854,7 @@ function template_ignoreboards()
 						</ul>
 					</li>
 				</ul>
-				<ul class="ignoreboards floatright">
+				<ul class="ignoreboards floatright reset">
 					<li class="category">
 						<ul>';
 
@@ -2557,7 +2560,7 @@ function template_profile_avatar_select()
 	// Start with the upper menu
 	echo '
 							<dt>
-								<strong id="personal_picture">', $txt['personal_picture'], '</strong>
+								<h3 id="personal_picture">', $txt['personal_picture'], '</h3>
 								<input type="radio" onclick="swap_avatar(this); return true;" name="avatar_choice" id="avatar_choice_none" value="none"' . ($context['member']['avatar']['choice'] == 'none' ? ' checked="checked"' : '') . ' class="input_radio" /><label for="avatar_choice_none"' . (isset($context['modify_error']['bad_avatar']) ? ' class="error"' : '') . '>' . $txt['no_avatar'] . '</label><br />
 								', !empty($context['member']['avatar']['allow_server_stored']) ? '<input type="radio" onclick="swap_avatar(this); return true;" name="avatar_choice" id="avatar_choice_server_stored" value="server_stored"' . ($context['member']['avatar']['choice'] == 'server_stored' ? ' checked="checked"' : '') . ' class="input_radio" /><label for="avatar_choice_server_stored"' . (isset($context['modify_error']['bad_avatar']) ? ' class="error"' : '') . '>' . $txt['choose_avatar_gallery'] . '</label><br />' : '', '
 								', !empty($context['member']['avatar']['allow_external']) ? '<input type="radio" onclick="swap_avatar(this); return true;" name="avatar_choice" id="avatar_choice_external" value="external"' . ($context['member']['avatar']['choice'] == 'external' ? ' checked="checked"' : '') . ' class="input_radio" /><label for="avatar_choice_external"' . (isset($context['modify_error']['bad_avatar']) ? ' class="error"' : '') . '>' . $txt['my_own_pic'] . '</label><br />' : '', '
@@ -2805,7 +2808,7 @@ function template_profile_theme_pick()
 								<strong>', $txt['current_theme'], ':</strong>
 							</dt>
 							<dd>
-								', $context['member']['theme']['name'], ' <a href="', $scripturl, '?action=theme;sa=pick;u=', $context['id_member'], ';', $context['session_var'], '=', $context['session_id'], '">', $txt['change'], '</a>
+								', $context['member']['theme']['name'], ' <a href="', $scripturl, '?action=theme;sa=pick;u=', $context['id_member'], ';', $context['session_var'], '=', $context['session_id'], '" class="button_submit">', $txt['a_change'], '</a>
 							</dd>';
 }
 

@@ -88,7 +88,7 @@ function template_main()
 	// get the avatars
 	if (!empty($context['boards']) && (!empty($options['show_children']) || $context['start'] == 0))
 	{
-		foreach ($category['boards'] as $board)
+		foreach ($context['boards'] as $board)
 		{
 			$ids[$board['last_post']['member']['id']] = $board['last_post']['member']['id'];
 		}

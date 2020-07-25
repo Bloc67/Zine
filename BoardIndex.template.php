@@ -79,7 +79,7 @@ function template_main()
 		// If this category even can collapse, show a link to collapse it.
 		if ($category['can_collapse'])
 			echo '
-				<a href="', $category['collapse_href'], '" title="', $category['is_collapsed'] ? $txt['show'] : $txt['hide'], '"><span class="floatright icon-', $category['is_collapsed'] ? 'down' : 'up', '-open"></span></a>';
+				<a href="', $category['collapse_href'], '" title="', $category['is_collapsed'] ? $txt['show'] : '', '"><span class="floatright icon-', $category['is_collapsed'] ? 'down' : 'up', '-open"></span></a>';
 
 		// The "category link" is only a link for logged in members. Guests just get the name.
 		echo '
