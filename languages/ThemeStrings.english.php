@@ -27,4 +27,6 @@ $txt['a_new_posts'] = 'Go to new posts';
 $txt['a_change'] = 'change';
 $txt['mark_cat_as_read'] = 'Mark category as read';
 
+$txt['a_moverecent'] = 'Show recent posts(if applicable) under category list';
+
 ?>

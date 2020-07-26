@@ -152,18 +152,16 @@ function template_settings()
 
 	$context['theme_settings'] = array(
 		array(
-			'id' => 'header_logo_url',
-			'label' => $txt['header_logo_url'],
-			'description' => $txt['header_logo_url_desc'],
-			'type' => 'text',
-		),
-		array(
 			'id' => 'smiley_sets_default',
 			'label' => $txt['smileys_default_set_for_theme'],
 			'options' => $context['smiley_sets'],
 			'type' => 'text',
 		),
 	'',
+		array(
+			'id' => 'move_recent',
+			'label' => $txt['a_moverecent'],
+		),
 		array(
 			'id' => 'show_mark_read',
 			'label' => $txt['enable_mark_as_read'],
@@ -235,10 +233,6 @@ function template_settings()
 		array(
 			'id' => 'show_bbc',
 			'label' => $txt['admin_bbc'],
-		),
-		array(
-			'id' => 'additional_options_collapsable',
-			'label' => $txt['additional_options_collapsable'],
 		),
 	);
 }

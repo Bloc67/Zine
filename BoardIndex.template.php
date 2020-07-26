@@ -61,7 +61,12 @@ function template_main()
 	}
 	
 	echo '
-		</ul>
+		</ul>';
+
+	if (!empty($settings['number_recent_posts']) && (!empty($context['latest_posts']) || !empty($context['latest_post'])) && !empty($settings['move_recent']))
+		show_recentposts_short();
+	
+	echo '
 	</div>
 
 	<div class="a_boards">';
@@ -177,52 +182,8 @@ function template_info_center()
 		<div id="upshrinkHeaderIC">';
 
 	// This is the "Recent Posts" bar.
-	if (!empty($settings['number_recent_posts']) && (!empty($context['latest_posts']) || !empty($context['latest_post'])))
-	{
-		echo '
-			<div class="title_barIC">
-				<h4 class="titlebg">
-					<span class="ie6_header floatleft">
-						<a href="', $scripturl, '?action=recent"><img class="icon" src="', $settings['images_url'], '/post/xx.gif" alt="', $txt['recent_posts'], '" /></a>
-						', $txt['recent_posts'], '
-					</span>
-				</h4>
-			</div>
-			<div class="hslice" id="recent_posts_content">
-				<div class="entry-title" style="display: none;">', $context['forum_name_html_safe'], ' - ', $txt['recent_posts'], '</div>
-				<div class="entry-content" style="display: none;">
-					<a rel="feedurl" href="', $scripturl, '?action=.xml;type=webslice">', $txt['subscribe_webslice'], '</a>
-				</div>';
-
-		// Only show one post.
-		if ($settings['number_recent_posts'] == 1)
-		{
-			// latest_post has link, href, time, subject, short_subject (shortened with...), and topic. (its id.)
-			echo '
-				<strong><a href="', $scripturl, '?action=recent">', $txt['recent_posts'], '</a></strong>
-				<p id="infocenter_onepost" class="middletext">
-					', $txt['recent_view'], ' &quot;', $context['latest_post']['link'], '&quot; ', $txt['recent_updated'], ' (', $context['latest_post']['time'], ')<br />
-				</p>';
-		}
-		// Show lots of posts.
-		elseif (!empty($context['latest_posts']))
-		{
-			echo '
-				<dl id="ic_recentposts" class="middletext">';
-
-			/* Each post in latest_posts has:
-					board (with an id, name, and link.), topic (the topic's id.), poster (with id, name, and link.),
-					subject, short_subject (shortened with...), time, link, and href. */
-			foreach ($context['latest_posts'] as $post)
-				echo '
-					<dt><strong>', $post['link'], '</strong> ', $txt['by'], ' ', $post['poster']['link'], ' (', $post['board']['link'], ')</dt>
-					<dd>', $post['time'], '</dd>';
-			echo '
-				</dl>';
-		}
-		echo '
-			</div>';
-	}
+	if (!empty($settings['number_recent_posts']) && (!empty($context['latest_posts']) || !empty($context['latest_post'])) && empty($settings['move_recent']))
+		show_recentposts();
 
 	// Show information about events, birthdays, and holidays on the calendar.
 	if ($context['show_calendar'])
@@ -358,6 +319,89 @@ function template_info_center()
 		</div>
 	</div></div>';
 
+}
+
+function show_recentposts()
+{
+	global $scripturl, $txt, $settings, $context;
+
+	echo '
+		<div class="title_barIC">
+			<h4 class="titlebg">
+				<span class="ie6_header floatleft">
+					<a href="', $scripturl, '?action=recent"><img class="icon" src="', $settings['images_url'], '/post/xx.gif" alt="', $txt['recent_posts'], '" /></a>
+					', $txt['recent_posts'], '
+				</span>
+			</h4>
+		</div>
+		<div class="hslice" id="recent_posts_content">
+			<div class="entry-title" style="display: none;">', $context['forum_name_html_safe'], ' - ', $txt['recent_posts'], '</div>
+			<div class="entry-content" style="display: none;">
+				<a rel="feedurl" href="', $scripturl, '?action=.xml;type=webslice">', $txt['subscribe_webslice'], '</a>
+			</div>';
+
+	// Only show one post.
+	if ($settings['number_recent_posts'] == 1)
+	{
+		// latest_post has link, href, time, subject, short_subject (shortened with...), and topic. (its id.)
+		echo '
+			<strong><a href="', $scripturl, '?action=recent">', $txt['recent_posts'], '</a></strong>
+			<p id="infocenter_onepost" class="middletext">
+				', $txt['recent_view'], ' &quot;', $context['latest_post']['link'], '&quot; ', $txt['recent_updated'], ' (', $context['latest_post']['time'], ')<br />
+			</p>';
+	}
+	// Show lots of posts.
+	elseif (!empty($context['latest_posts']))
+	{
+		echo '
+			<dl id="ic_recentposts" class="middletext">';
+
+		/* Each post in latest_posts has:
+				board (with an id, name, and link.), topic (the topic's id.), poster (with id, name, and link.),
+				subject, short_subject (shortened with...), time, link, and href. */
+		foreach ($context['latest_posts'] as $post)
+			echo '
+				<dt><strong>', $post['link'], '</strong> ', $txt['by'], ' ', $post['poster']['link'], ' (', $post['board']['link'], ')</dt>
+				<dd>', $post['time'], '</dd>';
+		echo '
+			</dl>';
+	}
+	echo '
+		</div>';
+}
+
+function show_recentposts_short()
+{
+	global $scripturl, $txt, $settings, $context;
+
+	echo '
+	<div class="title_bar"><br>
+		<h4 class="titlebg">', $txt['recent_posts'], '</h4>
+	</div>';
+
+	// Only show one post.
+	if ($settings['number_recent_posts'] == 1)
+	{
+		// latest_post has link, href, time, subject, short_subject (shortened with...), and topic. (its id.)
+		echo '
+	<strong><a href="', $scripturl, '?action=recent">', $txt['recent_posts'], '</a></strong>
+	<p id="infocenter_onepost" class="middletext">
+		', $txt['recent_view'], ' &quot;', $context['latest_post']['link'], '&quot; ', $txt['recent_updated'], ' (', $context['latest_post']['time'], ')<br />
+	</p>';
+	}
+	// Show lots of posts.
+	elseif (!empty($context['latest_posts']))
+	{
+		echo '
+	<ul class="reset short_recent">';
+
+		foreach ($context['latest_posts'] as $post)
+			echo '
+		<li>', $post['link'], ' -  ', $post['time'], '</li>';
+		
+		echo '
+	</ul>';
+	}
 }
 
 ?>
