@@ -25,5 +25,6 @@ $txt['a_nonews'] = 'At this time there are no news.';
 $txt['a_new_posts'] = 'Go to new posts';
 
 $txt['a_change'] = 'change';
+$txt['mark_cat_as_read'] = 'Mark category as read';
 
 ?>

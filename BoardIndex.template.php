@@ -98,13 +98,13 @@ function template_main()
 			{
 				// Mark read button for a category.
 				$mark_read_cat_button = array(
-					'markreadcat'.$category['id'] => array('text' => 'mark_as_read', 'image' => 'markread.gif', 'lang' => true, 'url' => $scripturl . '?action=markasread;c='.$category['id'].';' . $context['session_var'] . '=' . $context['session_id']),
+					'markreadcat'.$category['id'] => array('text' => 'mark_cat_as_read', 'image' => 'markread.gif', 'lang' => true, 'url' => $scripturl . '?action=markasread;c='.$category['id'].';' . $context['session_var'] . '=' . $context['session_id']),
 				);
 
 				// Show the mark all as read button?
 				if ($settings['show_mark_read'] && !empty($context['categories']))
 					echo '
-					<menu class="pagesection">', template_button_strip($mark_read_cat_button, 'right'), '</menu>';
+					<menu class="pagesection righttext">', template_button_strip($mark_read_cat_button, 'right'), '</menu>';
 			}
 		}
 
