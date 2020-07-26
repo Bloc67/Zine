@@ -104,6 +104,8 @@ h3 .floatright img { display: block; }
 .double_height { line-height: 2rem;}
 ul.reset, ul.reset li { padding: 0;	margin: 0;	list-style: none;}
 
+.smallertext { font-size: 0.9rem;	}
+
 .padding_top { padding-top: 1rem !important; }
 .padding_top_not { padding-top: 0 !important; }
 
@@ -328,7 +330,7 @@ a.icon-new:after {
               0 8px 4px rgba(0,0,0,0.05), 
               0 16px 8px rgba(0,0,0,0.05),
               0 32px 16px rgba(0,0,0,0.05);
-  --sidebarwidth: 300px;  
+  --sidebarwidth: 350px;  
   --bradius: 3px;  
 }
 
@@ -1234,8 +1236,9 @@ a.avatar {
 #ic_recentposts > dt:nth-of-type(odd),#ic_recentposts > dd:nth-of-type(odd) {
     border-bottom: 1px solid #ddd;
 }
-ul.reset.short_recent li {display: block; padding: 0 0 1rem 0; margin-bottom: 1rem; border-bottom: solid 1px #ddd;}
-ul.reset.short_recent li:last-of-type {border-bottom: none;}
+ul.short_recent  {padding: 0 0 0 1.5rem; margin: 0;}
+ul.short_recent li {margin-left: 0; }
+ul.short_recent li small { display: block; padding-top: 0; color: #888; }
 
 
 /* -------------------------------------------	*/

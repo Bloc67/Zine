@@ -1,3 +1,7 @@
+/* @ Zine theme */
+/*	@ Blocthemes 2020	*/
+/*	@	SMF 2.0.x	*/
+
 // Section menu
 $(document).on('click', '.section_menu li', function() {
 	$('.m_sections').fadeOut(50);

@@ -1,19 +1,24 @@
 <?php
 
-/* @ Rebus89 theme */
+/* @ Zine theme */
 /*	@ Blocthemes 2020	*/
 /*	@	SMF 2.0.x	*/
 
 /* function to add submenu on this page */
 function template_section_menu() 
 { 
-	global $txt, $settings;
+	global $txt, $settings, $context, $options;
 
 	echo '
 	<menu class="section_menu">
 		<ul class="reset">
-			<li data-section="#a_messageindex" class="active">' , $txt['topics'] , '</li>
-			<li data-section="#a_maside">' , $txt['parent_boards'] , '</li>
+			<li data-section="#a_messageindex" class="active">' , $txt['topics'] , '</li>';
+	
+	if (!empty($context['boards']) && (!empty($options['show_children']) || $context['start'] == 0))
+		echo '
+			<li data-section="#a_maside">' , $txt['parent_boards'] , '</li>';
+
+	echo '
 		</ul>
 	</menu>'; 
 }
@@ -28,7 +33,7 @@ function template_board_info($hide_description = false)
 
 	if(!$hide_description)
 		echo '
-		<dl>
+		<dl class="smallertext">
 			<dt>' , $txt['a_category'] , '</dt>
 			<dd>' , $board_info['cat']['name'] , '</dd>
 			<dt>' , $txt['topics'] , '</dt>
@@ -38,7 +43,7 @@ function template_board_info($hide_description = false)
 	if (!empty($settings['display_who_viewing']))
 	{
 		echo '
-		<div class="information2' , $hide_description ? ' noborder' : '' , '">';
+		<div class="smallertext information2' , $hide_description ? ' noborder' : '' , '">';
 		
 		if ($settings['display_who_viewing'] == 1)
 			echo count($context['view_members']), ' ', count($context['view_members']) === 1 ? $txt['who_member'] : $txt['members'];

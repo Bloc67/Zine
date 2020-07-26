@@ -393,11 +393,11 @@ function show_recentposts_short()
 	elseif (!empty($context['latest_posts']))
 	{
 		echo '
-	<ul class="reset short_recent">';
+	<ul class="short_recent">';
 
 		foreach ($context['latest_posts'] as $post)
 			echo '
-		<li>', $post['link'], ' -  ', $post['time'], '</li>';
+		<li>', $post['link'], ' <small>', $post['time'], '</small></li>';
 		
 		echo '
 	</ul>';

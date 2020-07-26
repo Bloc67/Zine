@@ -31,7 +31,7 @@ function template_topic_info($hide = false)
 	global $txt, $context;
 
 	echo '
-		<div>', $txt['read'], ' ', $context['num_views'], ' ', $txt['times'], '</div>';
+		<div class="smallertext">', $txt['read'], ' ', $context['num_views'], ' ', $txt['times'], '</div>';
 
 	if(!$hide)
 		echo '
@@ -44,7 +44,7 @@ function template_topic_info($hide = false)
 	if (!empty($settings['display_who_viewing']))
 	{
 		echo '
-		<div class="information2">';
+		<div class="smallertext information2">';
 		
 		if ($settings['display_who_viewing'] == 1)
 			echo count($context['view_members']), ' ', count($context['view_members']) === 1 ? $txt['who_member'] : $txt['members'];
