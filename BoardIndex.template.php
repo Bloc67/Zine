@@ -295,33 +295,7 @@ function template_info_center()
 				', $txt['most_online_ever'], ': ', comma_format($modSettings['mostOnline']), ' (', timeformat($modSettings['mostDate']), ')
 			</p>';
 
-		// Users Online Today
-	echo '
-			<div class="title_barIC">
-				<h4 class="titlebg">
-					<span class="ie6_header floatleft">
-						<img class="icon" src="', $settings['images_url'], '/icons/online.gif', '" alt="', $txt['online_users'], '" />', $txt['uot_users_online_'.$modSettings['uot_setting_period']], '
-					</span>
-				</h4>
-			</div>
-			<p class="inline smalltext">';
-	echo
-				$txt['uot_total'], ': <b>', $context['num_users_online_today'], '</b>';
-
-			if ($context['viewing_allowed'])
-	echo
-				' (', $txt['uot_visible'], ': ', ($context['num_users_online_today'] - $context['num_users_hidden_today']), ', ', $txt['uot_hidden'], ': ', $context['num_users_hidden_today'], ')';
-
-				// Assuming there ARE users online... each user in users_online has an id, username, name, group, href, and link.
-				if (!empty($context['users_online_today']) && $context['viewing_allowed'])
-				{
-	echo
-					'<br />', implode(', ', $context['list_users_online_today']);
-				}
-	echo '
-			</p>';
-
-			// If they are logged in, but statistical information is off... show a personal message bar.
+	// If they are logged in, but statistical information is off... show a personal message bar.
 	if ($context['user']['is_logged'] && !$settings['show_stats_index'])
 	{
 		echo '
