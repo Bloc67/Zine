@@ -348,16 +348,12 @@ function template_showPosts()
 		foreach ($context['posts'] as $post)
 		{
 			echo '
-		<div class="topic">
+		<div class="profile_topic">
 			<div class="', $post['alternate'] == 0 ? 'windowbg2' : 'windowbg', ' core_posts">
-				<span class="topslice"><span></span></span>
-				<div class="content">
-					<div class="counter">', $post['counter'], '</div>
-					<div class="topic_details">
-						<h5><strong><a href="', $scripturl, '?board=', $post['board']['id'], '.0">', $post['board']['name'], '</a> / <a href="', $scripturl, '?topic=', $post['topic'], '.', $post['start'], '#msg', $post['id'], '">', $post['subject'], '</a></strong></h5>
-						<span class="smalltext">&#171;&nbsp;<strong>', $txt['on'], ':</strong> ', $post['time'], '&nbsp;&#187;</span>
-					</div>
-					<div class="list_posts">';
+				<div class="counter">', $post['counter'], '</div>
+				<h5><strong><a href="', $scripturl, '?board=', $post['board']['id'], '.0">', $post['board']['name'], '</a> / <a href="', $scripturl, '?topic=', $post['topic'], '.', $post['start'], '#msg', $post['id'], '">', $post['subject'], '</a></strong></h5>
+				<span class="smalltext">', $post['time'], '</span>
+				<div class="list_posts">';
 
 			if (!$post['approved'])
 				echo '
@@ -367,7 +363,6 @@ function template_showPosts()
 
 			echo '
 					', $post['body'], '
-					</div>
 				</div>';
 
 			if ($post['can_reply'] || $post['can_mark_notify'] || $post['can_delete'])
@@ -401,7 +396,6 @@ function template_showPosts()
 				</div>';
 
 			echo '
-				<br class="clear" />
 			</div>
 		</div>';
 		}

@@ -2436,6 +2436,41 @@ span.minithumb {
 #pick_theme .windowbg:after { 	border-bottom: solid 3px #ccc; }
 #pick_theme .windowbg, #pick_theme .windowbg p,
 #pick_theme .windowbg2, #pick_theme .windowbg2 p { padding: 0; margin: 0;}
+.profile_topic .core_posts {
+    display: grid;
+    grid-template-columns: 2rem 1fr 1fr 1fr;
+    grid-gap: 0.5rem;
+}
+.profile_topic .core_posts > h5,
+.profile_topic .core_posts > span.smalltext,
+.profile_topic .core_posts > .list_posts {
+    grid-column: 2 / -1;
+}
+.profile_topic .core_posts > .counter {
+    font-size: 1.6rem;
+    color: #aaa;
+    margin-top: 0.3rem;
+}
+.profile_topic .core_posts > h5 {
+    font-size: 1.2rem;
+    padding: 0.5rem 0 0 0;
+    margin: 0;
+}
+.profile_topic .core_posts > span.smalltext {
+    font-size: 0.8rem;
+    color: #aaa;
+    padding: 0;
+    margin: -0.3rem 0 0 0;
+}
+.profile_topic .core_posts > .list_posts {
+    line-height: 1.4rem;
+    font-size: 0.9rem;
+}
+.profile_topic {
+    overflow: hidden;
+    padding: 0 0 1rem 0;
+}
+
 
 /* -------------------------------------------	*/
 @media screen and (max-width: 1100px) {
