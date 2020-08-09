@@ -729,6 +729,11 @@ legend {
 #guest_form .onerow input {grid-column: span 2;}
 #guest_form .onerow input[type=submit] {grid-column: span 1;}
 
+#guest_form.openid .onerow {
+    grid-template-columns: repeat(auto-fit, minmax(4rem,1fr));
+ }
+#guest_form.openid .onerow input {grid-column: span 1;}
+
 #news_section, #linktree_section, 
 #content_section, #footer_section { padding: 1rem; }
 #linktree_section ul { display: block; overflow: hidden;}

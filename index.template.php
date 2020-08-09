@@ -212,7 +212,7 @@ function template_head_user()
 	{
 		echo '
 				<script type="text/javascript" src="', $settings['default_theme_url'], '/scripts/sha1.js"></script>
-				<form id="guest_form" action="', $scripturl, '?action=login2" method="post" accept-charset="', $context['character_set'], '" ', empty($context['disable_login_hashing']) ? ' onsubmit="hashLoginPassword(this, \'' . $context['session_id'] . '\');"' : '', '>
+				<form id="guest_form"' , !empty($modSettings['enableOpenID']) ? ' class="openid"' : '' , '" action="', $scripturl, '?action=login2" method="post" accept-charset="', $context['character_set'], '" ', empty($context['disable_login_hashing']) ? ' onsubmit="hashLoginPassword(this, \'' . $context['session_id'] . '\');"' : '', '>
 					<div class="onerow">
 						<input type="text" name="user" class="input_text" />
 						<input type="password" name="passwrd" class="input_text input_password" />
@@ -222,17 +222,15 @@ function template_head_user()
 							<option value="10080">', $txt['one_week'], '</option>
 							<option value="43200">', $txt['one_month'], '</option>
 							<option value="-1" selected="selected">', $txt['forever'], '</option>
-						</select>
-						<input type="submit" value="', $txt['login'], '" class="button_submit" />
-					</div>
-
-					<div class="info">', $txt['quick_login_dec'], '</div>';
-
+						</select>';
 		if (!empty($modSettings['enableOpenID']))
 			echo '
-					<input type="text" name="openid_identifier" id="openid_url" class="input_text openid_login" />';
+						<input type="text" name="openid_identifier" id="openid_url" class="input_text openid_login" />';
 
 		echo '
+						<input type="submit" value="', $txt['login'], '" class="button_submit" />
+					</div>
+					<div class="info">', $txt['quick_login_dec'], '</div>
 					<input type="hidden" name="hash_passwrd" value="" /><input type="hidden" name="', $context['session_var'], '" value="', $context['session_id'], '" />
 				</form>';
 	}
