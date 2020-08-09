@@ -230,7 +230,7 @@ function template_head_user()
 
 		if (!empty($modSettings['enableOpenID']))
 			echo '
-					<div id="a_openid"><span class="icon-openid" title="OpenID"></span><input type="text" name="openid_identifier" id="openid_url" class="input_text openid_login" /></div>';
+					<input type="text" name="openid_identifier" id="openid_url" class="input_text openid_login" />';
 
 		echo '
 					<input type="hidden" name="hash_passwrd" value="" /><input type="hidden" name="', $context['session_var'], '" value="', $context['session_id'], '" />
