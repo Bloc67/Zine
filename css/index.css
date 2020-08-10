@@ -1241,9 +1241,7 @@ a.avatar {
 #ic_recentposts > dt:nth-of-type(odd),#ic_recentposts > dd:nth-of-type(odd) {
     border-bottom: 1px solid #ddd;
 }
-ul.short_recent  {padding: 0 0 0 1.5rem; margin: 0;}
-ul.short_recent li {margin-left: 0; }
-ul.short_recent li small { display: block; padding-top: 0; color: #888; }
+#a_boardindex .infocenter_header { margin-top: 1rem;}
 
 
 /* -------------------------------------------	*/
@@ -1599,6 +1597,8 @@ ul.short_recent li small { display: block; padding-top: 0; color: #888; }
     text-align: right;
 }
 #display_jump_to * {margin: 0 !important;}  
+#quickReplyOptions {margin-top: 0; padding-top: 0; }
+
 
 /* -------------------------------------------	*/
 @media screen and (max-width: 1100px) {

@@ -61,7 +61,12 @@ function template_main()
 	}
 	
 	echo '
-		</ul>
+		</ul>';
+
+	if (!empty($settings['number_recent_posts']) && (!empty($context['latest_posts']) || !empty($context['latest_post'])) && !empty($settings['move_recent']))
+		show_recentposts_short();
+	
+	echo '
 	</div>
 
 	<div class="a_boards">';
@@ -177,7 +182,7 @@ function template_info_center()
 		<div id="upshrinkHeaderIC">';
 
 	// This is the "Recent Posts" bar.
-	if (!empty($settings['number_recent_posts']) && !empty($context['latest_posts']))
+	if (!empty($settings['number_recent_posts']) && (!empty($context['latest_posts']) || !empty($context['latest_post'])) && empty($settings['move_recent']))
 		show_recentposts();
 
 	// Show information about events, birthdays, and holidays on the calendar.
@@ -370,16 +375,12 @@ function show_recentposts_short()
 	global $scripturl, $txt, $settings, $context;
 
 	echo '
-	<div class="title_bar"><br>
-		<h4 class="titlebg">', $txt['recent_posts'], '</h4>
-	</div>';
+	<h4 class="infocenter_header">', $txt['recent_posts'], '</h4>';
 
 	// Only show one post.
 	if ($settings['number_recent_posts'] == 1)
 	{
-		// latest_post has link, href, time, subject, short_subject (shortened with...), and topic. (its id.)
 		echo '
-	<strong><a href="', $scripturl, '?action=recent">', $txt['recent_posts'], '</a></strong>
 	<p id="infocenter_onepost" class="middletext">
 		', $txt['recent_view'], ' &quot;', $context['latest_post']['link'], '&quot; ', $txt['recent_updated'], ' (', $context['latest_post']['time'], ')<br />
 	</p>';
@@ -388,11 +389,11 @@ function show_recentposts_short()
 	elseif (!empty($context['latest_posts']))
 	{
 		echo '
-	<ul class="short_recent">';
+	<ul class="reset category_list">';
 
 		foreach ($context['latest_posts'] as $post)
 			echo '
-		<li>', $post['link'], ' <small>', $post['time'], '</small></li>';
+		<li>', $post['link'], '</li>';
 		
 		echo '
 	</ul>';
