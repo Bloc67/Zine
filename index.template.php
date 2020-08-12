@@ -28,6 +28,7 @@ function template_html_above()
 	global $context, $settings, $options, $scripturl, $txt, $modSettings;
 
 	loadtemplate('Common');
+	run_themecontrol();
 
 	// Show right to left and the character set for ease of translating.
 	echo '
@@ -137,12 +138,16 @@ function template_body_above()
 		$fixed = str_replace(array('[',']'),array('',''),$context['page_index']);
 		$context['page_index'] = $fixed;
 	}
+
+	template_bars('top');
+	template_bars('center');
 }
 
 function template_body_below()
 {
 	global $context, $settings, $options, $scripturl, $txt, $modSettings;
 
+	template_bars('bottom');
 	echo '
 	</main>
 </section>
@@ -157,7 +162,7 @@ function template_body_below()
 		<small>', $txt['page_created'], $context['load_time'], $txt['seconds_with'], $context['load_queries'], $txt['queries'], '</small>';
 
 	echo '
-		<small><a href="https://github.com/blocthemes/Zine" target="_blank">Zine theme by Bloc</small>
+		<small><a href="https://www.bjornhkristiansen.com/smf20/" target="_blank">Zine theme by Bloc</small>
 	</footer>
 </section>';
 }
@@ -431,5 +436,25 @@ function fix_pageindex($c)
 	return $fixed;
 }
 
+function template_bars($a)
+{
+	global $context, $settings;
+
+	// top area calls?
+	if(count($context['zine']['areas'][$a])>0)
+	{
+		echo '
+		<div id="zine_'.$a.'" class="zinepanel">';
+		foreach($context['zine']['areas'][$a] as $m => $o)
+		{
+			echo '
+			<div' , !empty($o[2]) ? ' style="'.$o[2].'"' : '' , '>
+				' , call_user_func($o[0],$o[1]) , '
+			</div>';
+		}
+		echo '
+		</div>';
+	}
+}
 
 ?>

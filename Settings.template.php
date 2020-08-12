@@ -157,7 +157,6 @@ function template_settings()
 			'options' => $context['smiley_sets'],
 			'type' => 'text',
 		),
-	'',
 		array(
 			'id' => 'move_recent',
 			'label' => $txt['a_moverecent'],
@@ -235,6 +234,8 @@ function template_settings()
 			'label' => $txt['admin_bbc'],
 		),
 	);
+	if(isset($context['TPortal']))
+		unset($context['theme_settings'][1]);
 }
 
 ?>

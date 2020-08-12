@@ -36,11 +36,7 @@ function template_tpcredits()
 		</div>
 		<p class="information">' , $txt['tp-creditack2']  , '</p>
 		<div class="windowbg2">
-			<span class="topslice"><span></span></span>
-			<div class="content" style="line-height: 1.6em; padding: 0 1em;">
-				'.$txt['tp-credit1'].'
-			</div>
-			<span class="botslice"><span></span></span>
+			'.$txt['tp-credit1'].'
 		</div>
 	</div>';
 }

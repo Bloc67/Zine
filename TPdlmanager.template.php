@@ -202,7 +202,6 @@ function template_main()
 			</div>';
 		}
 		echo '
-		<span class="botslice"></span>
 		</div>
 	</div>';
 
@@ -377,7 +376,6 @@ function template_main()
 		{
 			echo '
 			<div class="windowbg">
-				<span class="topslice"><span></span></span>
 				<div class="content">';
 			echo '
 				' , ($dlitem['icon']!='' && strpos($dlitem['icon'], 'blank.gif') == false) ? '<img class="dl_icon" src="'. (substr($dlitem['icon'],0,4)=='http' ? $dlitem['icon'] :  $boardurl. '/' . $dlitem['icon']).'" alt="'.$dlitem['name'].'"  />' : '<img class="dl_icon" src="' . $settings['tp_images_url'] . '/TPnodl.png" alt="" />' , '	';
@@ -460,7 +458,6 @@ function template_main()
 					<br><img src="'.$dlitem['bigshot'].'" style="max-width: 100%;" alt="" />';
 		echo '
 				</div>
-			<span class="botslice"><span></span></span>
 			</div>
 			</div>
 		</div>
@@ -483,7 +480,6 @@ function template_main()
             <h3 class="catbg">'.$txt['tp-dlupload'].'</h3>
         </div>
 		<div class="windowbg noup" style="padding:0px">
-			<span class="topslice"><span></span></span>
 			  <div">
 				<form accept-charset="', $context['character_set'], '" name="tp_dlupload" id="tp_dlupload" action="'.$scripturl.'?action=tpmod;dl=upload" method="post" enctype="multipart/form-data" onsubmit="submitonce(this);">
 				';

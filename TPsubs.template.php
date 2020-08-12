@@ -21,10 +21,10 @@ function TPortal_searchbox()
 	global $context, $txt, $scripturl;
 
 	echo '
-	<form accept-charset="', $context['character_set'], '" action="', $scripturl, '?action=search2" method="post" style="padding: 0; text-align: center; margin: 0; ">
-		<input type="text" name="search" value="" class="block_search" />
-		<input type="submit" name="submit" value="', $txt['search'], '" class="block_search_submit button_submit" /><br>
-		<br><span class="smalltext"><a href="', $scripturl, '?action=search;advanced">', $txt['search_advanced'], '</a></span>
+	<form accept-charset="', $context['character_set'], '" action="', $scripturl, '?action=search2" method="post">
+		<input type="text" name="search" value="" class="input_text" />
+		<input type="submit" name="submit" value="', $txt['search'], '" class="button_submit" />
+		<small><a href="', $scripturl, '?action=search;advanced">', $txt['search_advanced'], '</a></small>
 		<input type="hidden" name="advanced" value="0" />
 	</form>';
 }
@@ -35,22 +35,19 @@ function TPortal_onlinebox()
 	global $context;
 
 	if($context['TPortal']['useavataronline'] == 1)
-		tpo_whos();
+		tpo_whos(false,true);
 	else
-		echo '
-	<div style="line-height: 1.4em;">' , ssi_whosOnline() , '</div>';
+		tpo_whos(false,false);
 }
 
-function tpo_whos($buddy_only = false)
+function tpo_whos($buddy_only = false, $avatars = true)
 {
 	global $txt, $scripturl;
 
 	$whos = tpo_whosOnline();
 	echo '
-	<div>
-	' . $whos['num_guests'] .' ' , $whos['num_guests'] == 1 ? $txt['guest'] : $txt['guests'] , ',
-	' . $whos['num_users_online'] .' ' , $whos['num_users_online'] == 1 ? $txt['user'] : $txt['users'] , '
-	</div>';
+	<p>' . $whos['num_guests'] .' ' , $whos['num_guests'] == 1 ? $txt['guest'] : $txt['guests'] , ' | ' . $whos['num_users_online'] .' ' , $whos['num_users_online'] == 1 ? $txt['user'] : $txt['users'] , '</p>
+	<ul class="reset category_list">';
 	if(isset($whos['users_online']) && count($whos['users_online']) > 0)
 	{
 		$ids = array();
@@ -65,10 +62,15 @@ function tpo_whos($buddy_only = false)
 			$names[$wh['id']] = $wh['name'];
 			$times[$wh['id']] = timeformat($timestamp);
 		}
-		$avy = progetAvatars($ids);
-		foreach($avy as $a => $av)
-			echo '
-		<a class="avatar_single2" title="'.$names[$a].'" href="' . $scripturl . '?action=profile;u='.$a.'">' . $av . '</a>';
+		if($avatars)
+		{
+			$avy = progetAvatars($ids);
+			foreach($avy as $a => $av)
+				echo '
+			<li><a class="avatar" title="'.$names[$a].'" href="' . $scripturl . '?action=profile;u='.$a.'">' . $av . '</a></li>';
+		}
+		echo '
+		</ul>';
 	}
 }
 
@@ -895,8 +897,7 @@ function template_TPsearch_above()
 			<h3 class="catbg">' , $txt['tp-searcharticles'] , '</h3>
 		</div>
 		<div class="windowbg2 noup">
-			<span class="topslice"><span></span></span>
-			<p style="margin: 0; padding: 0 1em;">
+			<p>
 				<a href="' . $scripturl. '?action=tpmod;sa=searcharticle">' . $txt['tp-searcharticles2'] . '</a>';
 	}
 	else
@@ -907,8 +908,7 @@ function template_TPsearch_above()
 			<h3 class="catbg">' , $txt['tp-searcharticles'] , '</h3>
 		</div>
 		<div class="windowbg2 noup">
-			<span class="topslice"><span></span></span>
-			<p style="margin: 0; padding: 0 1em;">
+			<p>
 				<a href="' . $scripturl. '?action=tpmod;sa=searcharticle">' . $txt['tp-searcharticles2'] . '</a> |
 				<a href="' . $scripturl. '?action=tpmod;dl=search">' . $txt['tp-searchdownloads'] . '</a>';
 
@@ -919,7 +919,6 @@ function template_TPsearch_above()
 
 	echo '
 			</p>
-			<span class="botslice"><span></span></span>
 		</div>
 	</div>';
 
@@ -1048,12 +1047,7 @@ function TPblock($block, $theme, $side, $double=false)
 		echo '<div class="block_' . $side . 'container" id="block_' . $block['type'] . '">';
 	}
 
-	if(function_exists('ctheme_tp_getblockstyles'))
-		$types = ctheme_tp_getblockstyles();
-	if(strstr($forum_version, '2.1'))
-		$types = tp_getblockstyles21();
-	else
-		$types = tp_getblockstyles();
+	$types = ctheme_tp_getblockstyles();
 
 	// check
 	if ( ($block['var5'] == '') || ($block['var5'] == 99) )
@@ -1101,7 +1095,7 @@ function TPblock($block, $theme, $side, $double=false)
 			if(($block['visible'] == '' || $block['visible'] == '1') && $block['frame'] != 'frame')
 			{
 				echo '
-		<div style="padding: 4px;">';
+		<div>';
 				if($block['visible'] == '' || $block['visible'] == '1')
 					echo '<a href="javascript:%20void(0);%20return%20false" onclick="toggle(\''.$block['id'].'\'); return false"><img id="blockcollapse'.$block['id'].'" style="margin: 0;float:right" src="' .$settings['tp_images_url']. '/' , !in_array($block['id'],$context['TPortal']['upshrinkblocks']) ? 'TPcollapse' : 'TPexpand' , '.png"   alt="" title="'.$txt['block-upshrink_description'].'" /></a>';
 				echo '&nbsp;
@@ -1191,7 +1185,7 @@ function article_renders($type = 1, $single = false, $first = false)
 	if($type == 1)
 	{
 		$code = '
-	<div style="overflow: hidden;">
+	<div class="tpstyle1">
 		<div></div>
 		' . ($usetitlestyle ? '<div class="'. $divheader .'">' : '<div>') . '
 		' . ($usetitlestyle ? '<h3 class="' . $headerstyle . ' article_title">{article_title}&nbsp;</h3>' :  '<h3 class="article_title">{article_title} </h3>') . '
@@ -1210,7 +1204,7 @@ function article_renders($type = 1, $single = false, $first = false)
 			<div class="article_padding article_text" style="clear: both;">{article_text}
 			' . (!isset($context['TPortal']['article']['boardnews']) && !$single ? '{article_bookmark}' : '') . '
 			' . (isset($context['TPortal']['article']['boardnews']) ? '{article_boardnews}' : '') . '
-			' . (!$single ? '</div><span class="botslice"><span></span></span>' : '') . '
+			' . (!$single ? '</div>' : '') . '
 		</div>
 			' . ($single ? '
 			{article_bookmark}
@@ -1224,7 +1218,7 @@ function article_renders($type = 1, $single = false, $first = false)
 	{
 		if($first)
 			$code = '
-	<div style="margin-bottom: 5px; overflow: hidden;">
+	<div class="tpstyle2">
 		<div></div>
 		' . ($usetitlestyle ? '<div class="'. $divheader .'">' : '<div>') . '
 		' . ($usetitlestyle ? '<h3 class="' . $headerstyle . ' article_title">{article_title}&nbsp;</h3>' :  '<h3 class="article_title">{article_title} </h3>') . '
@@ -1243,7 +1237,6 @@ function article_renders($type = 1, $single = false, $first = false)
 			' . (!isset($context['TPortal']['article']['boardnews']) && !$single ? '{article_bookmark}' : '') . '
 			' . (isset($context['TPortal']['article']['boardnews']) ? '{article_boardnews}' : '') . '
 			</div>
-			' . (!$single ? '<span class="botslice"><span></span></span>' : '') . '
 			' . ($single ? '
 			{article_bookmark}
 			{article_moreauthor}
@@ -1254,11 +1247,11 @@ function article_renders($type = 1, $single = false, $first = false)
 		';
 		else
 			$code = '
-	<div class="tparticle windowbg noup" style="margin: 12px 0 0 0; padding: 12px 16px; border-radius: 6px;">
+	<div class="tparticle windowbg noup">
 	<div class="article_iconcolumn">{article_iconcolumn}</div>
 		<div class="render2">
-			<h3 class="article_title" style="margin-left: 1em;">' . ($showtitle ? '{article_title}' : '') . '</h3>
-			<div class="article_info" style="margin-top: 2px;">
+			<h3 class="article_title">' . ($showtitle ? '{article_title}' : '') . '</h3>
+			<div class="article_info">
 				{article_author}
 				{article_category}
 				{article_date}
@@ -1288,7 +1281,7 @@ function article_renders($type = 1, $single = false, $first = false)
 	{
 		if(!$first)
 			$code = '
-		' . ($showtitle ? '<div style="padding: 2px 1em;"><div class="align_right"><strong>{article_title}</strong></div>{article_date}<hr /></div>': '') . '';
+		' . ($showtitle ? '<div><div class="align_right"><strong>{article_title}</strong></div>{article_date}<hr /></div>': '') . '';
 		elseif($single || $first)
 			$code = '
 	<div class="tparticle">
@@ -1298,7 +1291,7 @@ function article_renders($type = 1, $single = false, $first = false)
 			' . ($showtitle ? '<h3' . ($usetitlestyle ? ' class="' . $headerstyle . '"' : '') . '>{article_title} </h3>': '') . '
 			</div>
 			<div' . ($useframestyle ? ' class="' .$divbody. '" ' : '') . '>
-			<div class="article_info" style="border-bottom: solid 1px #ddd; margin-top: 2px;">
+			<div class="article_info">
 				{article_author}
 				{article_category}
 				{article_date}
@@ -1310,7 +1303,6 @@ function article_renders($type = 1, $single = false, $first = false)
 			' . (!isset($context['TPortal']['article']['boardnews']) && !$single ? '{article_bookmark}' : '') . '
 			' . (isset($context['TPortal']['article']['boardnews']) ? '{article_boardnews}' : '') . '
 			</div>
-			' . (($useframestyle && !$single) ? '<span class="botslice"><span></span></span>' : '') . '
 			' . ($single ? '
 			<div>
 				<div class="tp_container">
@@ -1347,7 +1339,6 @@ function article_renders($type = 1, $single = false, $first = false)
 			' . (!isset($context['TPortal']['article']['boardnews']) && !$single ? '{article_bookmark}' : '') . '
 			' . (isset($context['TPortal']['article']['boardnews']) ? '{article_boardnews}' : '') . '
 			</div>
-			' . (($useframestyle && !$single) ? '<span class="botslice"><span></span></span>' : '') . '
 			' . ($single ? '
 
 			<div class="tp_container">
@@ -1365,7 +1356,7 @@ function article_renders($type = 1, $single = false, $first = false)
 		if(!$first)
 			$code = '
 		' . ($showtitle ? '<div class="' . $divheader . '">
-			<h3 class="' . $headerstyle . '" style="margin-top: 3px; font-weight: normal;">{article_title}</h3>
+			<h3 class="' . $headerstyle . '">{article_title}</h3>
 		</div>': '') . '';
 		else
 			$code = '
@@ -1375,7 +1366,6 @@ function article_renders($type = 1, $single = false, $first = false)
 		' . ($showtitle ? '<h3' . ($usetitlestyle ? ' class="' . $headerstyle . '"' : '') . '>{article_shortdate} <strong>{article_title}</strong> </h3>': '') . '
 		</div>
 			<div class="' . ($useframestyle ? '' .$divbody. '' : '') . '">
-			' . ($useframestyle ? '<span class="topslice"><span></span></span>' : '') . '
 				<div class="article_info">
 		' . (!$single ? '{article_avatar}' : '') .  '
 					{article_author}
@@ -1385,7 +1375,7 @@ function article_renders($type = 1, $single = false, $first = false)
 					{article_rating}
 					{article_options}
 				</div>
-			<div style="padding: 0 5px;">
+			<div>
 				<div class="article_padding">{article_text}</div>
 					' . (!isset($context['TPortal']['article']['boardnews']) && !$single ? '{article_bookmark}' : '') . '
 					' . (isset($context['TPortal']['article']['boardnews']) ? '{article_boardnews}' : '') . '
@@ -1397,7 +1387,6 @@ function article_renders($type = 1, $single = false, $first = false)
 				{article_morelinks}
 				{article_comments}' : '') . '
 			</div>
-			' . ($useframestyle ? '<span class="botslice"><span></span></span>' : '') . '
 		</div>
 	</div>
 		';
@@ -1406,7 +1395,7 @@ function article_renders($type = 1, $single = false, $first = false)
 	{
 		if(!$single)
 			$code = '
-		<div class="article_title' . ($useframestyle ? ' windowbg' : '') .'" style="margin: 0 0 3px 0; padding: 1em;">
+		<div class="article_title' . ($useframestyle ? ' windowbg' : '') .'">
 			<div><strong style="font-size: 105%;">{article_title}</strong></div>
 			<div class="catlayout6_text">
 				{article_text}
@@ -1415,7 +1404,7 @@ function article_renders($type = 1, $single = false, $first = false)
 		else
 			$code = '
 		<div class="tborder">
-			<div class="' . ($useframestyle ? 'windowbg' : '') . '" style="margin: 12px 0 0 0; padding: 12px 16px;">
+			<div class="' . ($useframestyle ? 'windowbg' : '') . '">
 				<div class="cat_bar">
 					<h3 class="article_title catbg">{article_title}</h3>
 				</div>
@@ -1448,12 +1437,11 @@ function article_renders($type = 1, $single = false, $first = false)
 	elseif($type == 8)
 	{
 		$code = '
-<div class="tborder" style="margin-bottom: 5px;">
-	<div class="article' . (isset($context['TPortal']['article']['boardnews']) ? ' windowbg' : ' windowbg') . '" style="margin: 0;">
-	<span class="topslice"><span></span></span>
+<div class="tpstyle8">
+	<div class="article' . (isset($context['TPortal']['article']['boardnews']) ? ' windowbg' : ' windowbg') . '">
 		<div class="article_picturecolumn smallpad">{article_picturecolumn}</div>
 		<div class="render4 smallpad">
-			<h2 class="article_title" style="padding-left: 0;">{article_title} </h2>
+			<h2 class="article_title">{article_title} </h2>
 			<div class="article_info">
 		' . (!$single ? '{article_avatar}' : '') .  '
 				{article_author}
@@ -1477,7 +1465,6 @@ function article_renders($type = 1, $single = false, $first = false)
 			{article_morelinks}
 			{article_comments}' : '') . '
 		</div>
-	<span class="botslice"><span></span></span>
 	</div>
 </div>';
 	}
@@ -1784,7 +1771,7 @@ function article_comments($render = true)
 	<div></div>
 	<h2 class="titlebg article_extra">' .	$txt['tp-comments'] . '  ' . (tp_hidepanel('articlecomments', false, true, '5px 5px 0 5px')) . '</h2>
 	<div id="articlecomments"' . (in_array('articlecomments',$context['tp_panels']) ? ' style="display: none;"' : '') . '>
-		<div style="padding: 1em;">';
+		<div>';
 
 		$counter = 1;
 		if(isset($context['TPortal']['article']['comment_posts']))
@@ -1792,7 +1779,7 @@ function article_comments($render = true)
 			foreach($context['TPortal']['article']['comment_posts'] as $comment)
 			{
 				echo '
-					<div style="margin-bottom:8px;" class="' . ($context['TPortal']['article']['authorID']!=$comment['posterID'] ? 'mycomment' : 'othercomment') . '">
+					<div class="' . ($context['TPortal']['article']['authorID']!=$comment['posterID'] ? 'mycomment' : 'othercomment') . '">
 					<a id="comment'.$comment['id'].'"></a>';
 				// can we edit the comment or are the owner of it?
 				if(allowedTo('tp_articles') || $comment['posterID'] == $context['user']['id'] && !$context['user']['is_guest'])
@@ -2200,9 +2187,7 @@ function template_tp_fatal_error()
 			<h3 class="catbg">' , $txt['tp-error'], '</h3>
 		</div>
 		<div class="windowbg">
-			<span class="topslice"><span></span></span>
 			<div class="padding">', $context['TPortal']['errormessage'] , '</div>
-			<span class="botslice"><span></span></span>
 		</div>
 	</div>';
 

@@ -426,4 +426,112 @@ function a_attachments($message)
 	}
 }
 
+function run_themecontrol()
+{
+	global $context, $settings, $txt;
+
+	$context['zine'] = array(
+		'areas' => array(
+			'top' => array(),
+			'left' => array(),
+			'center' => array(),
+			'right' => array(),
+			'lower' => array(),
+			'bottom' => array(),
+		),
+	); 
+
+	// TinyPortal
+	if(isset($context['TPortal']))
+	{
+		// dont use the move-recent-news option
+		unset($settings['move_recent']);
+		// setup the calls for the theme
+	
+		foreach(array('top','left','right','center','lower','bottom') as $w)
+		{
+			// areas array: function, parameters, style
+			if($context['TPortal'][$w.'panel']==1)
+				$context['zine']['areas'][$w][] = array('TPortal_panel',$w, (in_array('tp'.$w.'barHeader',$context['tp_panels']) && $context['TPortal']['showcollapse']==1 ? 'display: none;' : ''));
+		}	
+	}
+}
+
+function ctheme_tp_getblockstyles()
+{
+	return array(
+		'0' => array(
+			'class' => '',
+			'code_title_left' => '<h3>',
+			'code_title_right' => '</h3>',
+			'code_top' => '<div class="tpblock blockstyle0">',
+			'code_bottom' => '</div>',
+		),
+		'1' => array(
+			'class' => '',
+			'code_title_left' => '<h3>',
+			'code_title_right' => '</h3>',
+			'code_top' => '<div class="tpblock blockstyle1">',
+			'code_bottom' => '</div>',
+		),
+		'2' => array(
+			'class' => '',
+			'code_title_left' => '<h3>',
+			'code_title_right' => '</h3>',
+			'code_top' => '<div class="tpblock blockstyle2">',
+			'code_bottom' => '</div>',
+		),
+		'3' => array(
+			'class' => '',
+			'code_title_left' => '<h3>',
+			'code_title_right' => '</h3>',
+			'code_top' => '<div class="tpblock blockstyle3">',
+			'code_bottom' => '</div>',
+		),
+		'4' => array(
+			'class' => '',
+			'code_title_left' => '<h3>',
+			'code_title_right' => '</h3>',
+			'code_top' => '<div class="tpblock blockstyle4">',
+			'code_bottom' => '</div>',
+		),
+		'5' => array(
+			'class' => '',
+			'code_title_left' => '<h3>',
+			'code_title_right' => '</h3>',
+			'code_top' => '<div class="tpblock blockstyle5">',
+			'code_bottom' => '</div>',
+		),
+		'6' => array(
+			'class' => '',
+			'code_title_left' => '<h3>',
+			'code_title_right' => '</h3>',
+			'code_top' => '<div class="tpblock blockstyle6">',
+			'code_bottom' => '</div>',
+		),
+		'7' => array(
+			'class' => '',
+			'code_title_left' => '<h3>',
+			'code_title_right' => '</h3>',
+			'code_top' => '<div class="tpblock blockstyle7">',
+			'code_bottom' => '</div>',
+		),
+		'8' => array(
+			'class' => '',
+			'code_title_left' => '<h3>',
+			'code_title_right' => '</h3>',
+			'code_top' => '<div class="tpblock blockstyle8">',
+			'code_bottom' => '</div>',
+		),
+		'9' => array(
+			'class' => '',
+			'code_title_left' => '<h3>',
+			'code_title_right' => '</h3>',
+			'code_top' => '<div class="tpblock blockstyle9">',
+			'code_bottom' => '</div>',
+		),
+	);
+}
+
+
 ?>

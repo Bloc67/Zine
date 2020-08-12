@@ -1814,7 +1814,6 @@ function template_editcategory()
 											<h3 class="catbg"><span class="left"></span>{article_shortdate} {article_title} {article_category}</h3>
 										</div>
 										<div class="windowbg2">
-											<span class="topslice"><span></span></span>
 											<div class="content">
 												{article_avatar}
 												<div class="article_info">
@@ -1830,7 +1829,6 @@ function template_editcategory()
 												<div class="article_padding">{article_morelinks}</div>
 												<div class="article_padding">{article_comments}</div>
 											</div>
-											<span class="botslice"><span></span></span>
 										</div>
 									</div>';
 						echo '</div>

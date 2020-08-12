@@ -66,6 +66,8 @@ function template_main()
 	if (!empty($settings['number_recent_posts']) && (!empty($context['latest_posts']) || !empty($context['latest_post'])) && !empty($settings['move_recent']))
 		show_recentposts_short();
 	
+	template_bars('left');
+
 	echo '
 	</div>
 
