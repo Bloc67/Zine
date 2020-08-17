@@ -949,10 +949,12 @@ menu.section_menu { padding: 0 0.5rem;}
   order: 4;
 }
 /* give prio to some items */
-#button_home { order: 1; }
-#button_pm { order: 3; }
-.navigation__item.current { order: 2; }
-
+/* -------------------------------------------	*/
+@media screen and (max-width: 1100px) {
+	#button_home { order: 1; }
+	#button_pm { order: 3; }
+	.navigation__item.current { order: 2; }
+}
 /* -------------------------------------------	*/
 @media screen and (max-width: 400px) {
   .navigation__item {
